@@ -52,9 +52,11 @@ public class FloodingTimer extends Timer {
 		
 		RoutingMessage msg = new RoutingMessage(sinkId, sinkPosition, nodeID, gridID);
 		this.node.broadcast(msg);
-		if(gaf != null)
+		if(gaf != null) {
 			this.gaf.battery.gastaEnergiaEnvio();
-		
+			this.gaf.confPctSent++;
+			this.gaf.confPctsSentByHour++;
+		}
 	}
 
 }

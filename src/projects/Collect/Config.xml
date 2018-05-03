@@ -80,13 +80,13 @@
 		<logFileName value="logfile.txt" />
 
 		<!--Redirects the default log file to the console. No logfile will be created if set to true.-->
-		<outputToConsole value="true" />
+		<outputToConsole value="false" />
 
 		<!--Indicates whether all log-files of the current simulation  are stored in a new directory. The name of the new directory is given by the string-representation of the date when the simulation starts.-->
-		<logToTimeDirectory value="true" />
+		<logToTimeDirectory value="false" />
 
 		<!--If set to true, the system configuration is written to the default log file after the application has been started.-->
-		<logConfiguration value="true" />
+		<logConfiguration value="false" />
 
 		<!--If set to true, the log files are flushed every time a new log is added.-->
 		<eagerFlush value="false" />
@@ -228,10 +228,22 @@
 <UDG rMax="150"/>
 
 <maxEnergyOfBattery energy="0"/>
+<minEnergyOfBattery energy="0"/>
+
+<maxTimeBetweenSends time="0.0"/>
 <minTimeBetweenSends time="0"/>
+
+<maxSolarIntensity intensity="0"/>
+<minSolarIntensity intensity="0"/>
+
 <wattPico power="0"/>
 <radiationMultiplier multiplier="0"/>
-<maxTimeBetweenSends time="0.0"/>
+
+<nameDir name="0"/>
+<simulationType type="0"/>
+
+
+
 
 
 <MessageTransmission ConstantTime="1"/>

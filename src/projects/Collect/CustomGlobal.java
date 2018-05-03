@@ -42,7 +42,8 @@ public class CustomGlobal extends AbstractCustomGlobal{
 		
 		try {
 			multiplicadorIntensidade = Configuration.getDoubleParameter("radiationMultiplier/multiplier");
-		} catch (CorruptConfigurationEntryException e) {
+		} 
+		catch (CorruptConfigurationEntryException e) {
 			e.printStackTrace();
 		}
 		

@@ -1,11 +1,14 @@
 package projects.Collect.nodes.nodeImplementations;
 
 import sinalgo.configuration.Configuration;
+import sinalgo.configuration.CorruptConfigurationEntryException;
 import sinalgo.configuration.WrongConfigurationException;
 import sinalgo.gui.transformation.PositionTransformation;
 import sinalgo.nodes.Node;
 import sinalgo.nodes.messages.Inbox;
 import sinalgo.nodes.messages.Message;
+import sinalgo.runtime.Global;
+import sinalgo.tools.logging.Logging;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -13,6 +16,7 @@ import java.util.ArrayList;
 
 import projects.Collect.nodes.messages.DataMessage;
 import projects.Collect.nodes.timers.FloodingTimer;
+import projects.Collect.nodes.nodeImplementations.Sink;
 
 public class Sink extends Node{
 
@@ -21,6 +25,31 @@ public class Sink extends Node{
 	 * Save the id messages received
 	 */
 	public ArrayList<Integer>idMessages = new ArrayList<>();
+	
+	/**
+	 * Compute the quantity of packets was send from all nodes
+	 */
+	static public double pcktsSentByNetwork = 0;
+	
+	/**
+	 * Compute the quantity of packets the sink received from network
+	 */
+	static public double pcktsReceivedFromNetwork = 0;
+	
+	/**
+	 * Manage the log of simulation
+	 */
+	Logging log;
+	
+	/**
+	 * Give a name of simulation (Density, range e etc.)
+	 */
+	public String simulationType;
+	
+	/**
+	 * The number of simulation (ex: numberOfNodes = 529 and simulation = 2, the namedir = 5292) 
+	 */
+	public int nameDir;
 	
 	
 	
@@ -48,8 +77,9 @@ public class Sink extends Node{
 	 * Send a flooding package to network with the Sink position
 	 */
 	public void init() {
-				setSinkPosition();
-				
+		
+		setSinkPosition();		
+		getParamLog();
 		FloodingTimer t = new FloodingTimer(ID, getPosition(), ID, 0, null);
 		t.startRelative(1, Sink.this);
 	}
@@ -61,6 +91,16 @@ public class Sink extends Node{
 
 	@Override
 	public void postStep() {
+		
+		if(Global.currentTime == 259200){
+			
+			double percentPcktArrived = (pcktsReceivedFromNetwork/pcktsSentByNetwork)*100;
+		 	
+			log = Logging.getLogger(simulationType + "_SimulacaoTX_" + nameDir + "/TXentrega.csv");
+			log.logln("Porcentagem de pacotes recebidos,pacotes recebidos,pacotes enviados");
+			log.logln(Double.toString(percentPcktArrived) + "," + pcktsReceivedFromNetwork + "," + pcktsSentByNetwork);
+			
+		}
 	}
 
 	@Override
@@ -106,13 +146,33 @@ public class Sink extends Node{
 	
 	private void processDataMessage(DataMessage msg) {
 		
-		if(!isPcktReceived(msg.idMessage)){
-			
+		if(!isPcktReceived(msg.idMessage)){			
 			
 			idMessages.add(msg.idMessage);
-						
+			pcktsReceivedFromNetwork++;			
+		}		
+	}
+	
+	public void getParamLog() {
+		try {
+			
+			nameDir = Configuration.getIntegerParameter("nameDir/name");
+			
+		} 
+		catch (CorruptConfigurationEntryException e) {
+			
+			e.printStackTrace();
 		}
 		
+		try {
+			
+			simulationType = Configuration.getStringParameter("simulationType/type");
+			
+		} 
+		catch (CorruptConfigurationEntryException e) {
+			
+			e.printStackTrace();
+		}
 	}
 
 	

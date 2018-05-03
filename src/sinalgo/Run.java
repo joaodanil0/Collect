@@ -62,7 +62,7 @@ public class Run {
 	public static void main(String args[]) {
 		String classPathSeparator = System.getProperty("path.separator");
 		String dirSeparator = System.getProperty("file.separator");
-		testJavaVersion();
+		//testJavaVersion();
 		addJDOMtoClassPath();
 
 		String command = ""; // the entire command

@@ -54,7 +54,8 @@ public class Energy {
 				
 		try {
 			wattPicoPainel = Configuration.getDoubleParameter("wattPico/power");
-		} catch (CorruptConfigurationEntryException e) {
+		} 
+		catch (CorruptConfigurationEntryException e) {
 			e.printStackTrace();
 		}
 		

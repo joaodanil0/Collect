@@ -22,6 +22,7 @@ import sinalgo.nodes.Position;
 import sinalgo.nodes.messages.Inbox;
 import sinalgo.nodes.messages.Message;
 import sinalgo.runtime.Global;
+import sinalgo.tools.logging.Logging;
 
 
 public class GAF extends Node{
@@ -117,6 +118,21 @@ public class GAF extends Node{
 	public int dataPctSent = 0;
 	
 	/**
+	 * Computes a quantity of Discovery packets that have been sent
+	 */
+	public int confPctSent = 0;
+	
+	/**
+	 * Computes a quantity of data packets that gave been sent by hours
+	 */
+	public int dataPctsSentByHour = 0;
+	
+	/**
+	 * Computes a quantity of Discovery packets that gave been sent by hours
+	 */
+	public int confPctsSentByHour = 0;
+	
+	/**
 	 * Save the id messages received
 	 */
 	public ArrayList<Integer>idMessages = new ArrayList<>();
@@ -132,14 +148,49 @@ public class GAF extends Node{
 	public double energyTd = 0;
 	
 	/**
-	 * The minimum time the packet can be sent
+	 * Maximum energy of battery
 	 */
-	public double minTimeSend;
+	public double maxBatteryEnergy;
 	
 	/**
-	 * The maximum time the packet can be sent
+	 * Minimum energy of battery
 	 */
-	public double maxTimeSend;
+	public double minBatteryEnergy;
+	
+	/**
+	 * Minimum time between send the packets
+	 */
+	public double minTimeBetweenSends;
+	
+	/**
+	 * Maximum time between send the packets
+	 */
+	public double maxTimeBetweenSends;
+	
+	/**
+	 * Minimum solar intensity (for control packet sent)
+	 */
+	public double minSolarIntensity;
+	
+	/**
+	 * Maximum solar intensity (for control packet sent)
+	 */
+	public double maxSolarIntensity;
+	
+	/**
+	 * Manage the log of simulation
+	 */
+	Logging log;
+	
+	/**
+	 * Give a name of simulation (Density, range e etc.)
+	 */
+	public String simulationType;
+	
+	/**
+	 * The number of simulation (ex: numberOfNodes = 529 and simulation = 2, the namedir = 5292) 
+	 */
+	public int nameDir;
 	
 	@Override
 	public void handleMessages(Inbox inbox) {
@@ -183,9 +234,11 @@ public class GAF extends Node{
 	public void init() {
 		
 		divideGrid();
-		getMaxEnergyOfBatery();
-		getMinTimeSend();
-		getMaxTimeSend();
+		getEnergyOfBatery();
+		battery = new Energy(maxBatteryEnergy);
+		getTimeSend();	
+		getSolarIntensity();
+		getParamLog();
 	}
 
 	@Override
@@ -238,6 +291,7 @@ public class GAF extends Node{
 			flag = false;
 		}
 		
+		generateLog();
 	}
 
 	@Override
@@ -326,6 +380,8 @@ public class GAF extends Node{
 			DataMessage msgReply = new DataMessage(msg.ID, sinkDistance, msg.idMessage, msg.gridMessage);
 			idMessages.add(msg.idMessage);
 			if(hasEnergy()) {
+				dataPctSent++;	
+				dataPctsSentByHour++;
 				broadcast(msgReply);
 				battery.gastaEnergiaEnvio();
 			}
@@ -393,11 +449,19 @@ public class GAF extends Node{
 	/**
 	 * Get the max energy of battery (from XML file)
 	 */
-	public void getMaxEnergyOfBatery() {
+	public void getEnergyOfBatery() {
 		try {
 			
-			double maxBattery = Configuration.getDoubleParameter("maxEnergyOfBattery/energy");
-			battery = new Energy(maxBattery);
+			maxBatteryEnergy = Configuration.getDoubleParameter("maxEnergyOfBattery/energy");			
+		} 
+		catch (CorruptConfigurationEntryException e) {
+			
+			e.printStackTrace();
+		}
+		
+		try {
+			
+			minBatteryEnergy = Configuration.getDoubleParameter("minEnergyOfBattery/energy");			
 		} 
 		catch (CorruptConfigurationEntryException e) {
 			
@@ -446,6 +510,8 @@ public class GAF extends Node{
 			if(hasEnergy()) {
 				DiscoveryMessage msg = new DiscoveryMessage(ID, gridID, enat, state, battery.getEnergiaAtual());			
 				broadcast(msg);
+				confPctSent++;
+				confPctsSentByHour++;
 				energyTd = battery.getEnergiaAtual();
 				
 				tdTimer = new TdTimer(ID, gridID, enat, state, this, battery.getEnergiaAtual());
@@ -513,11 +579,19 @@ public class GAF extends Node{
 	//-------------------------------------------------------------
 	
 	/**
-	 * 	Get the minimum value of send from XML
+	 * Get the times of send from XML
 	 */
-	public void getMinTimeSend() {
+	public void getTimeSend() {
 		try {
-			minTimeSend = Configuration.getDoubleParameter("minTimeBetweenSends/time");
+			minTimeBetweenSends = Configuration.getDoubleParameter("minTimeBetweenSends/time");
+		} 
+		catch (CorruptConfigurationEntryException e) {
+			
+			e.printStackTrace();
+		}
+		
+		try {
+			maxTimeBetweenSends = Configuration.getDoubleParameter("maxTimeBetweenSends/time");
 		} 
 		catch (CorruptConfigurationEntryException e) {
 			
@@ -526,11 +600,19 @@ public class GAF extends Node{
 	}
 	
 	/**
-	 * 	Get the maximum value of send from XML
+	 * Get the solar intensity from XML
 	 */
-	public void getMaxTimeSend() {
+	public void getSolarIntensity() {
 		try {
-			maxTimeSend = Configuration.getDoubleParameter("maxTimeBetweenSends/time");
+			minSolarIntensity = Configuration.getDoubleParameter("minSolarIntensity/intensity");
+		} 
+		catch (CorruptConfigurationEntryException e) {
+			
+			e.printStackTrace();
+		}
+		
+		try {
+			maxSolarIntensity = Configuration.getDoubleParameter("maxSolarIntensity/intensity");
 		} 
 		catch (CorruptConfigurationEntryException e) {
 			
@@ -550,16 +632,15 @@ public class GAF extends Node{
 		else
 			solarIntensity = CustomGlobal.intensidadeSolar;
 		
-		double controlEnergy = (((battery.getEnergiaAtual()/10) - battery.getEnergiaMaxima())/(0 - battery.getEnergiaMaxima()));
-		double controlSolarInt = (((1.9*solarIntensity) - 1000)/(0 - 1000));
-		double time = ((maxTimeSend - minTimeSend)*(controlEnergy + controlSolarInt) + minTimeSend)/2;
+		double controlEnergy = (((battery.getEnergiaAtual()/10) - maxBatteryEnergy)/(minBatteryEnergy - maxBatteryEnergy));
+		double controlSolarInt = (((1.9*solarIntensity) - maxSolarIntensity)/(minSolarIntensity - maxSolarIntensity));
+		double time = ((maxTimeBetweenSends - minTimeBetweenSends)*(controlEnergy + controlSolarInt) + 2*minTimeBetweenSends)/2;
 		
-		//
-		//
-		if(time <= minTimeSend)
-			time = minTimeSend;
 		
-		System.out.println("Time: " + Global.currentTime/3600 + " | time: " + time + " | Si: " + solarIntensity);
+		if(time <= minTimeBetweenSends)
+			time = minTimeBetweenSends;
+		
+		//System.out.println("Time: " + Global.currentTime/3600 + " | time: " + time + " | Si: " + solarIntensity);
 		
 		return time;
 	}
@@ -630,6 +711,77 @@ public class GAF extends Node{
 			
 			System.out.println("| Tempo: " + ta);
 		}		
+	}
+	
+	public void getParamLog() {
+		try {
+			
+			nameDir = Configuration.getIntegerParameter("nameDir/name");
+			
+		} 
+		catch (CorruptConfigurationEntryException e) {
+			
+			e.printStackTrace();
+		}
+		
+		try {
+			
+			simulationType = Configuration.getStringParameter("simulationType/type");
+			
+		} 
+		catch (CorruptConfigurationEntryException e) {
+			
+			e.printStackTrace();
+		}
+	}
+	
+	public void generateLog(){
+		
+		if(Global.currentTime == 1){
+			log = Logging.getLogger(simulationType +"_Simulacao_" + nameDir + "/Energia.csv");
+			if(ID == 1) {
+				log.logln("Tempo decorrido,Energia do no,Coordenada X,Coordenada Y,Pacotes Enviados,Pacotes de confi"
+						+ "guracao,Enviados+Configuracao");
+			}
+			
+			 
+			 log.logln(Double.toString(Global.currentTime/3600) + "," + Double.toString(battery.getEnergiaAtual())+ ","
+					 + Double.toString(getPosition().xCoord) + "," +  Double.toString(getPosition().yCoord) + ","
+					 + dataPctSent + "," + confPctSent + "," + (dataPctSent + confPctSent));
+			 
+			 
+			 log = Logging.getLogger(simulationType +"_Simulacao_" + nameDir + "/PctsHora.csv");
+			 
+			 if(ID == 1) {
+				 log.logln("Pacotes enviados por hora,Pacotes configuracao por hora,enviados+configuracao");
+			 }
+			 
+			 
+			 log.logln(dataPctsSentByHour + "," + confPctsSentByHour + "," + (dataPctsSentByHour + confPctsSentByHour));
+			 
+			 dataPctsSentByHour = 0;
+			 confPctsSentByHour = 0;
+			 
+			 
+			 
+		}
+		
+		if(Global.currentTime % 3600 == 0) {
+			log = Logging.getLogger(simulationType +"_Simulacao_" + nameDir + "/PctsHora.csv");
+			log.logln(dataPctsSentByHour + "," + confPctsSentByHour + "," + (dataPctsSentByHour + confPctsSentByHour));
+			 
+			dataPctsSentByHour = 0;
+			confPctsSentByHour = 0;
+		}
+		
+		if(Global.currentTime % 60 == 0){
+			log = Logging.getLogger(simulationType +"_Simulacao_" + nameDir + "/Energia.csv");
+			
+			log.logln(Double.toString(Global.currentTime/3600) + "," + Double.toString(battery.getEnergiaAtual()) + ","
+				  + Double.toString(getPosition().xCoord) + "," +  Double.toString(getPosition().yCoord) + "," 
+				  + dataPctSent + "," + confPctSent + "," + (dataPctSent + confPctSent));
+			
+		}			
 	}
 
 
