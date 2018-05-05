@@ -24,7 +24,7 @@ area = int(num_nos)/float(densidade);
 lado = int(math.sqrt(area));
 
 for j in range(simulacoes_res,simulacoes+1):
-		
+		#
 	os.system("java -cp binaries/bin/ sinalgo.Run 							\
 			-batch 								  							\
 			-project Collect 					  							\

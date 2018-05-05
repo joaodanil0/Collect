@@ -13,6 +13,8 @@ import projects.Collect.nodes.timers.FloodingTimer;
 import projects.Collect.nodes.timers.TaTimer;
 import projects.Collect.nodes.timers.TdTimer;
 import projects.Collect.nodes.timers.TsTimer;
+import projects.Collect.nodes.nodeImplementations.GAF;
+import projects.Collect.nodes.timers.SendTimer;
 import sinalgo.configuration.Configuration;
 import sinalgo.configuration.CorruptConfigurationEntryException;
 import sinalgo.configuration.WrongConfigurationException;
@@ -61,6 +63,16 @@ public class GAF extends Node{
 	 * Represent the battery of node
 	 */
 	public Energy battery;
+	
+	/**
+	 * Check if sendTimer is active
+	 */
+	public boolean startSendTimer = false;
+	
+	/**
+	 * Timer of send packet
+	 */
+	public SendTimer sendTimer;
 			
 	/**
 	 * Check if TdTimer is active
@@ -191,6 +203,11 @@ public class GAF extends Node{
 	 * The number of simulation (ex: numberOfNodes = 529 and simulation = 2, the namedir = 5292) 
 	 */
 	public int nameDir;
+	
+	/**
+	 * Compute the quantity of dead nodes at the network
+	 */
+	public static int deadNode = 0;
 	
 	@Override
 	public void handleMessages(Inbox inbox) {
@@ -505,7 +522,7 @@ public class GAF extends Node{
 			
 			td = 10;			
 			enat = ta;
-			//System.out.println("ID: " + ID + " | ta: " + ta);
+			
 			battery.gastaEnergiaEnvio();			
 			if(hasEnergy()) {
 				DiscoveryMessage msg = new DiscoveryMessage(ID, gridID, enat, state, battery.getEnergiaAtual());			
@@ -532,6 +549,12 @@ public class GAF extends Node{
 			taTimer.startRelative(ta, GAF.this);
 			startTaTimer = true;
 			td = (ta/6);
+		}
+		
+		if(!startSendTimer) {
+			sendTimer = new SendTimer(this);
+			sendTimer.startRelative(ta/2, GAF.this);
+			startSendTimer = true;
 		}
 		
 		enat = enat - 1;
@@ -632,8 +655,8 @@ public class GAF extends Node{
 		else
 			solarIntensity = CustomGlobal.intensidadeSolar;
 		
-		double controlEnergy = (((battery.getEnergiaAtual()/10) - maxBatteryEnergy)/(minBatteryEnergy - maxBatteryEnergy));
-		double controlSolarInt = (((1.9*solarIntensity) - maxSolarIntensity)/(minSolarIntensity - maxSolarIntensity));
+		double controlEnergy = (((battery.getEnergiaAtual()) - maxBatteryEnergy)/(minBatteryEnergy - maxBatteryEnergy));
+		double controlSolarInt = (((2*solarIntensity) - maxSolarIntensity)/(minSolarIntensity - maxSolarIntensity));
 		double time = ((maxTimeBetweenSends - minTimeBetweenSends)*(controlEnergy + controlSolarInt) + 2*minTimeBetweenSends)/2;
 		
 		
@@ -762,6 +785,19 @@ public class GAF extends Node{
 			 dataPctsSentByHour = 0;
 			 confPctsSentByHour = 0;
 			 
+			 if(!hasEnergy()) {
+				deadNode++;
+			}
+				
+			log = Logging.getLogger(simulationType +"_Simulacao_" + nameDir + "/NosMortos.csv");
+			
+			if(ID == 1) {
+				log.logln("Quantidade de nos mortos");
+			}
+			log.logln("" + deadNode);
+				
+			deadNode = 0;
+			 
 			 
 			 
 		}
@@ -772,6 +808,15 @@ public class GAF extends Node{
 			 
 			dataPctsSentByHour = 0;
 			confPctsSentByHour = 0;
+			
+			if(!hasEnergy()) {
+				deadNode++;
+			}
+			
+			log = Logging.getLogger(simulationType +"_Simulacao_" + nameDir + "/NosMortos.csv");
+			log.logln("" + deadNode);
+			
+			deadNode = 0;
 		}
 		
 		if(Global.currentTime % 60 == 0){

@@ -5,7 +5,7 @@ import sys
 simulacoes = int(sys.argv[1])
 num_nos = int(sys.argv[2])
 
-total_horas = 72
+total_horas = 24*4
 
 no = numpy.zeros((total_horas*60,7))
 

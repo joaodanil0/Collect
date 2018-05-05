@@ -24,18 +24,9 @@ public class TaTimer extends Timer {
 				
 		if(this.gaf.state == States.active) {
 			
-			int idMessage = Integer.parseInt(this.gaf.ID + "" + this.gaf.dataPctSent++);
-			
-			if(this.gaf.hasEnergy()) {
-				this.gaf.dataPctsSentByHour++;
-				Sink.pcktsSentByNetwork++;
-				DataMessage msg = new DataMessage(this.gaf.ID, this.gaf.sinkDistance, idMessage, this.gaf.gridID);
-				this.node.broadcast(msg);
-				this.gaf.battery.gastaEnergiaEnvio();
-				this.gaf.state = States.discovery;
-				this.gaf.startTaTimer = false;	
-				//System.out.println("Time: " + Global.currentTime);
-			}			
+			this.gaf.state = States.discovery;
+			this.gaf.startTaTimer = false;	
+			this.gaf.startSendTimer = false;		
 		}		
 	}
 

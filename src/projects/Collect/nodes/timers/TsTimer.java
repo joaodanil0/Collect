@@ -23,6 +23,7 @@ public class TsTimer extends Timer{
 		this.gaf.startTsTimer = false;
 		this.gaf.startTdTimer = false;
 		this.gaf.startTaTimer = false;
+		this.gaf.startSendTimer = false;
 		
 		
 		

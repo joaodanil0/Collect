@@ -59,14 +59,12 @@ public class TdTimer extends Timer {
 					this.gaf.battery.gastaEnergiaEnvio();
 					DiscoveryMessage msg = new DiscoveryMessage(nodeID, gridID, enat, state, energyRemaining);			
 					this.node.broadcast(msg);
+					this.gaf.energyTd = this.gaf.battery.getEnergiaAtual();
 				}				
 			}
 			
 			this.gaf.state = States.active;
-			this.gaf.startTdTimer = false;	
-			
-			
+			this.gaf.startTdTimer = false;				
 		}		
 	}
-
 }
