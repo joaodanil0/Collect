@@ -137,12 +137,12 @@ public class GAF extends Node{
 	/**
 	 * Computes a quantity of data packets that gave been sent by hours
 	 */
-	public int dataPctsSentByHour = 0;
+	public static int dataPctsSentByHour = 0;
 	
 	/**
 	 * Computes a quantity of Discovery packets that gave been sent by hours
 	 */
-	public int confPctsSentByHour = 0;
+	public static int confPctsSentByHour = 0;
 	
 	/**
 	 * Save the id messages received
@@ -758,7 +758,7 @@ public class GAF extends Node{
 		}
 	}
 	
-	public void generateLog(){
+public void generateLog(){
 		
 		if(Global.currentTime == 1){
 			log = Logging.getLogger(simulationType +"_Simulacao_" + nameDir + "/Energia.csv");
@@ -773,50 +773,61 @@ public class GAF extends Node{
 					 + dataPctSent + "," + confPctSent + "," + (dataPctSent + confPctSent));
 			 
 			 
-			 log = Logging.getLogger(simulationType +"_Simulacao_" + nameDir + "/PctsHora.csv");
+			 
 			 
 			 if(ID == 1) {
-				 log.logln("Pacotes enviados por hora,Pacotes configuracao por hora,enviados+configuracao");
+				 log = Logging.getLogger(simulationType +"_Simulacao_" + nameDir + "/PctsHora.csv");	
+				 log.logln("Hora,Pacotes enviados por hora,Pacotes configuracao por hora,enviados+configuracao");
+				 log.logln(Global.currentTime/3600 +"," + dataPctsSentByHour + "," + confPctsSentByHour + "," + (dataPctsSentByHour + confPctsSentByHour));
+				 
+				 dataPctsSentByHour = 0;
+				 confPctsSentByHour = 0;
 			 }
+			 			 
 			 
-			 
-			 log.logln(dataPctsSentByHour + "," + confPctsSentByHour + "," + (dataPctsSentByHour + confPctsSentByHour));
-			 
-			 dataPctsSentByHour = 0;
-			 confPctsSentByHour = 0;
 			 
 			 if(!hasEnergy()) {
 				deadNode++;
-			}
+			 }
 				
-			log = Logging.getLogger(simulationType +"_Simulacao_" + nameDir + "/NosMortos.csv");
+			
 			
 			if(ID == 1) {
-				log.logln("Quantidade de nos mortos");
+				log = Logging.getLogger(simulationType +"_Simulacao_" + nameDir + "/NosMortos.csv");
+				log.logln("Hora,Quantidade de nos mortos");
+				log.logln(Global.currentTime/3600 +"," + deadNode);
+				deadNode = 0;
 			}
-			log.logln("" + deadNode);
+			
 				
-			deadNode = 0;
+			
 			 
 			 
 			 
 		}
 		
 		if(Global.currentTime % 3600 == 0) {
-			log = Logging.getLogger(simulationType +"_Simulacao_" + nameDir + "/PctsHora.csv");
-			log.logln(dataPctsSentByHour + "," + confPctsSentByHour + "," + (dataPctsSentByHour + confPctsSentByHour));
-			 
-			dataPctsSentByHour = 0;
-			confPctsSentByHour = 0;
+			
+			
+			if(ID == 1) {
+				log = Logging.getLogger(simulationType +"_Simulacao_" + nameDir + "/PctsHora.csv");
+				log.logln(Global.currentTime/3600 +"," + dataPctsSentByHour + "," + confPctsSentByHour + "," + (dataPctsSentByHour + confPctsSentByHour));
+				 
+				dataPctsSentByHour = 0;
+				confPctsSentByHour = 0;
+			}			
+			
 			
 			if(!hasEnergy()) {
 				deadNode++;
 			}
 			
-			log = Logging.getLogger(simulationType +"_Simulacao_" + nameDir + "/NosMortos.csv");
-			log.logln("" + deadNode);
+			if(ID == 1) {	
+				log = Logging.getLogger(simulationType +"_Simulacao_" + nameDir + "/NosMortos.csv");
+				log.logln(Global.currentTime/3600 +"," + deadNode);
+				deadNode = 0;
+			}
 			
-			deadNode = 0;
 		}
 		
 		if(Global.currentTime % 60 == 0){

@@ -1,11 +1,9 @@
 package projects.Collect.nodes.timers;
 
-import projects.Collect.nodes.messages.DataMessage;
 import projects.Collect.nodes.nodeImplementations.GAF;
 import projects.Collect.nodes.nodeImplementations.GAF.States;
-import projects.Collect.nodes.nodeImplementations.Sink;
 import sinalgo.nodes.timers.Timer;
-import sinalgo.runtime.Global;
+
 
 public class TaTimer extends Timer {
 

@@ -55,7 +55,7 @@ public class TdTimer extends Timer {
 			if(this.gaf.state == States.active) {
 				if(this.gaf.hasEnergy()) {
 					this.gaf.confPctSent++;
-					this.gaf.confPctsSentByHour++;
+					GAF.confPctsSentByHour++;
 					this.gaf.battery.gastaEnergiaEnvio();
 					DiscoveryMessage msg = new DiscoveryMessage(nodeID, gridID, enat, state, energyRemaining);			
 					this.node.broadcast(msg);

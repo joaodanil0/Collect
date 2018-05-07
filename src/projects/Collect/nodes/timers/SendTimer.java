@@ -5,7 +5,6 @@ import projects.Collect.nodes.nodeImplementations.GAF;
 import projects.Collect.nodes.nodeImplementations.Sink;
 import projects.Collect.nodes.nodeImplementations.GAF.States;
 import sinalgo.nodes.timers.Timer;
-import sinalgo.runtime.Global;
 
 public class SendTimer extends Timer {
 	
@@ -27,15 +26,12 @@ public class SendTimer extends Timer {
 			int idMessage = Integer.parseInt(this.gaf.ID + "" + this.gaf.dataPctSent++);
 			
 			if(this.gaf.hasEnergy()) {
-				this.gaf.dataPctsSentByHour++;
+				GAF.dataPctsSentByHour++;
 				Sink.pcktsSentByNetwork++;
+				Sink.pcktsSenthour++;
 				DataMessage msg = new DataMessage(this.gaf.ID, this.gaf.sinkDistance, idMessage, this.gaf.gridID);
 				this.node.broadcast(msg);
 				this.gaf.battery.gastaEnergiaEnvio();
-				//if(gaf.gridID == 0) {
-				//	System.out.println("ID: " + gaf.ID + "Time: " + (Global.currentTime - old));
-				//	old = Global.currentTime;
-				//}
 			}			
 		}
 	}
