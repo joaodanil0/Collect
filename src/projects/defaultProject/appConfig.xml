@@ -2,8 +2,8 @@
 <sinalgo>
 	<ProjectSelector windowWidth="800" windowHeight="600" lastChosenProject="sample1" windowPosX="200" windowPosY="100" isMaximized="false" selectedTab="1" />
 	<GUI windowWidth="672" windowHeight="617" windowPosX="22" windowPosY="29" isMaximized="false" ControlPanelExpandSimulation="true" ControlPanelShowFullViewPanel="false" ControlPanelShowTextPanel="true" ControlPanelShowProjectControl="true" RunOperationIsLimited="false" helpWindowWidth="500" helpWindowHeight="500" helpWindowPosX="200" helpWindowPosY="200" helpWindowIsMaximized="false" />
-	<RandomSeed seedFromPreviousRun="-6668653773036682023" />
-	<App lastSelectedFileDirectory="" checkForUpdatesAtStartup="false" updateCheckTimeStamp="0" runCmdLineArgs="-batch -project Collect -gen 50 Collect:GAF Collect:Grid C=UDG -gen 1 Collect:Sink Collect:Grid C=UDG -rounds 345600 -overwrite dimX=40 dimY=40 GeometricNodeCollection/rMax=30 UDG/rMax=30 maxTimeBetweenSends/time=7200 minTimeBetweenSends/time=120 maxEnergyOfBattery/energy=1000 minEnergyOfBattery/energy=0 maxSolarIntensity/intensity=300.0 minSolarIntensity/intensity=0 wattPico/power=0.15 radiationMultiplier/multiplier=0.3 nameDir/name=3 simulationType/type=padrao " />
+	<RandomSeed seedFromPreviousRun="8448980020137869725" />
+	<App lastSelectedFileDirectory="" checkForUpdatesAtStartup="false" updateCheckTimeStamp="0" runCmdLineArgs="-batch -project Collect -gen 50 Collect:GAF Collect:Grid C=UDG -gen 1 Collect:Sink Collect:Grid C=UDG -rounds 345600 -overwrite dimX=40 dimY=40 GeometricNodeCollection/rMax=30 UDG/rMax=30 maxTimeBetweenSends/time=7200 minTimeBetweenSends/time=120 maxEnergyOfBattery/energy=1000 minEnergyOfBattery/energy=0 maxSolarIntensity/intensity=300.0 minSolarIntensity/intensity=0 wattPico/power=0.15 radiationMultiplier/multiplier=0.3 nameDir/name=1 simulationType/type=padrao constBattery/number=1 constIntensity/number=1 " />
 	<GenNodesDlg numNodes="100" />
 </sinalgo>
 

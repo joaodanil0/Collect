@@ -19,6 +19,8 @@ minEnergyOfBattery = sys.argv[12]
 maxSolarIntensity = sys.argv[13]
 minSolarIntensity = sys.argv[14]
 wattPico = sys.argv[15]
+constBattery = sys.argv[16]
+constIntensity = sys.argv[17]
 
 area = int(num_nos)/float(densidade);
 lado = int(math.sqrt(area));
@@ -51,6 +53,9 @@ for j in range(simulacoes_res,simulacoes+1):
 																			\
 			nameDir/name=" + str(j) + "										\
 		    simulationType/type=" + tipoSimulacao + "		    			\
+																			\
+			constBattery/number=" + constBattery + " 						\
+		    constIntensity/number=" + constIntensity + "					\
 		    ")
 			
 

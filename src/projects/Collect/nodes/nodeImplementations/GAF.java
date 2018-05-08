@@ -209,6 +209,16 @@ public class GAF extends Node{
 	 */
 	public static int deadNode = 0;
 	
+	/**
+	 * The value that multiplier the current battery
+	 */
+	public double constBattery;
+	
+	/**
+	 * The value that multiplier the current solar intensity 
+	 */
+	public double constIntensity;
+	
 	@Override
 	public void handleMessages(Inbox inbox) {
 	
@@ -484,6 +494,15 @@ public class GAF extends Node{
 			
 			e.printStackTrace();
 		}
+		
+		try {
+			
+			constBattery = Configuration.getDoubleParameter("constBattery/number");			
+		} 
+		catch (CorruptConfigurationEntryException e) {
+			
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -641,6 +660,15 @@ public class GAF extends Node{
 			
 			e.printStackTrace();
 		}
+		
+		try {
+			
+			constIntensity = Configuration.getDoubleParameter("constIntensity/number");			
+		} 
+		catch (CorruptConfigurationEntryException e) {
+			
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -655,8 +683,8 @@ public class GAF extends Node{
 		else
 			solarIntensity = CustomGlobal.intensidadeSolar;
 		
-		double controlEnergy = (((battery.getEnergiaAtual()) - maxBatteryEnergy)/(minBatteryEnergy - maxBatteryEnergy));
-		double controlSolarInt = (((2*solarIntensity) - maxSolarIntensity)/(minSolarIntensity - maxSolarIntensity));
+		double controlEnergy = (((battery.getEnergiaAtual()/constBattery) - maxBatteryEnergy)/(minBatteryEnergy - maxBatteryEnergy));
+		double controlSolarInt = (((constIntensity*solarIntensity) - maxSolarIntensity)/(minSolarIntensity - maxSolarIntensity));
 		double time = ((maxTimeBetweenSends - minTimeBetweenSends)*(controlEnergy + controlSolarInt) + 2*minTimeBetweenSends)/2;
 		
 		

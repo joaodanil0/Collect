@@ -86,7 +86,7 @@
 		<logToTimeDirectory value="false" />
 
 		<!--If set to true, the system configuration is written to the default log file after the application has been started.-->
-		<logConfiguration value="false" />
+		<logConfiguration value="true" />
 
 		<!--If set to true, the log files are flushed every time a new log is added.-->
 		<eagerFlush value="false" />
@@ -242,7 +242,8 @@
 <nameDir name="0"/>
 <simulationType type="0"/>
 
-
+<constBattery number="0"/>
+<constIntensity number="0"/>
 
 
 

@@ -19,6 +19,9 @@ minEnergyOfBattery = 0
 maxSolarIntensity = 1000 * multiplicadorIntensidade
 minSolarIntensity = 0
 wattPico = 0.15
+constBattery = 1	# Divisor
+constIntensity = 1  # Multiplicador
+
 
 # Gera um arquivo para logs
 debbugfile = open('logs_simulacoes/' + tipoSimulacao + '_sem.log', 'a+')
@@ -48,7 +51,8 @@ for simulacao in range(1, simulacoes+1):
 																	str(raio) + ' ' + str(densidade) + ' ' + str(tipoSimulacao) + ' ' + 
 																	str(num_rounds) + ' ' + str(multiplicadorIntensidade) + ' ' + str(maxTimeBetweenSends) + ' ' +
 																	str(minTimeBetweenSends) + ' ' + str(maxEnergyOfBattery) + ' ' + str(minEnergyOfBattery) + ' ' +
-																	str(maxSolarIntensity) + ' ' + str(minSolarIntensity) + ' ' + str(wattPico))
+																	str(maxSolarIntensity) + ' ' + str(minSolarIntensity) + ' ' + str(wattPico) + ' ' +
+																	str(constBattery) + ' ' + str(constIntensity))
 																	
 			
 			debbugfile.write(' ... ok\n')
@@ -62,7 +66,8 @@ for simulacao in range(1, simulacoes+1):
 																	str(raio) + ' ' + str(densidade) + ' ' + str(tipoSimulacao) + ' ' + 
 																	str(num_rounds) + ' ' + str(multiplicadorIntensidade) + ' ' + str(maxTimeBetweenSends) + ' ' +
 																	str(minTimeBetweenSends) + ' ' + str(maxEnergyOfBattery) + ' ' + str(minEnergyOfBattery) + ' ' +
-																	str(maxSolarIntensity) + ' ' + str(minSolarIntensity) + ' ' + str(wattPico))
+																	str(maxSolarIntensity) + ' ' + str(minSolarIntensity) + ' ' + str(wattPico) + ' ' +
+																	str(constBattery) + ' ' + str(constIntensity))
 			debbugfile.write(' ... ok\n')				
 	
 		break
