@@ -683,15 +683,21 @@ public class GAF extends Node{
 		else
 			solarIntensity = CustomGlobal.intensidadeSolar;
 		
-		double controlEnergy = (((battery.getEnergiaAtual()/constBattery) - maxBatteryEnergy)/(minBatteryEnergy - maxBatteryEnergy));
-		double controlSolarInt = (((constIntensity*solarIntensity) - maxSolarIntensity)/(minSolarIntensity - maxSolarIntensity));
-		double time = ((maxTimeBetweenSends - minTimeBetweenSends)*(controlEnergy + controlSolarInt) + 2*minTimeBetweenSends)/2;
+		//double controlEnergy = (((battery.getEnergiaAtual()/constBattery) - maxBatteryEnergy)/(minBatteryEnergy - maxBatteryEnergy));
+		//double controlSolarInt = (((constIntensity*solarIntensity) - maxSolarIntensity)/(minSolarIntensity - maxSolarIntensity));
+		//double time = ((maxTimeBetweenSends - minTimeBetweenSends)*(controlEnergy + controlSolarInt) + 2*minTimeBetweenSends)/2;
 		
+		double c1 = ((maxTimeBetweenSends*Math.pow(maxSolarIntensity, 2) - minTimeBetweenSends*Math.pow(minSolarIntensity, 2))/((Math.pow(maxSolarIntensity, 2) - Math.pow(minSolarIntensity, 2))));
+		
+		double c2 = ((maxTimeBetweenSends*Math.pow(maxBatteryEnergy, 2) - minTimeBetweenSends*Math.pow(minBatteryEnergy, 2))/((Math.pow(maxBatteryEnergy, 2) - Math.pow(minBatteryEnergy, 2))));
+		
+		double a  = (minTimeBetweenSends - maxTimeBetweenSends)*(((Math.pow(battery.getEnergiaAtual(),2))/(Math.pow(maxBatteryEnergy,2) - Math.pow(minBatteryEnergy,2)))+
+					((Math.pow(solarIntensity,2))/(Math.pow(maxSolarIntensity,2) - Math.pow(minSolarIntensity,2))));
+		
+		double time = (a + c1+ c2)/2;
 		
 		if(time <= minTimeBetweenSends)
 			time = minTimeBetweenSends;
-		
-		//System.out.println("Time: " + Global.currentTime/3600 + " | time: " + time + " | Si: " + solarIntensity);
 		
 		return time;
 	}
