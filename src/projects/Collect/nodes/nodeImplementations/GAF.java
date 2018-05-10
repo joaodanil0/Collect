@@ -100,7 +100,7 @@ public class GAF extends Node{
 	public double ta;
 	
 	/**
-	 * Check of TsTimer is active
+	 * Check if TsTimer is active
 	 */
 	public boolean startTsTimer = false;
 	
@@ -113,6 +113,9 @@ public class GAF extends Node{
 	 * How long the node stay in sleep mode
 	 */
 	public double ts;
+	
+	public boolean isSleep = false;
+	public double energyRemaining = 0;
 		
 	/**
 	 * Estimation node active time
@@ -254,7 +257,7 @@ public class GAF extends Node{
 	@Override
 	public void preStep() {
 		
-		ta = calculateTimeSend();
+		
 	}
 
 	@Override
@@ -282,7 +285,7 @@ public class GAF extends Node{
 		rechargeNode();
 						
 		if(isConfigured && hasEnergy() && (Global.currentTime >= 100) && !flag) {
-			
+						
 			switch(state){
 				
 				case discovery:
@@ -307,7 +310,7 @@ public class GAF extends Node{
 		}	
 		else if(!hasEnergy()) {
 			setColor(Color.MAGENTA);
-			this.state = States.discovery;
+			this.state = States.sleep;
 			this.startTaTimer = false;
 			this.startTdTimer = false;
 			this.startTsTimer = false;
@@ -316,6 +319,16 @@ public class GAF extends Node{
 
 		if(hasEnergyPowerUp() && flag) {
 			flag = false;
+			if(!startTsTimer) {
+				tsTimer = new TsTimer(this);
+				tsTimer.startRelative(1, GAF.this);
+				startTsTimer = true;
+			}
+		}
+		
+		if(hasEnergy() && flag) {
+			setColor(Color.GRAY);
+			battery.modoSleep();
 		}
 		
 		generateLog();
@@ -327,6 +340,13 @@ public class GAF extends Node{
 		
 	}
 	
+	public String toString() {
+		return "Max Energy: "+ battery.getEnergiaMaxima() + "\n" + 
+			   "Energy: " + battery.getEnergiaAtual() + "\n" +
+			   "Time to Send:" + deleteme2 + "\n" +
+			   "Sleep Time: " + ts + "\n" + 
+			   "Enat: " + enat + "\n";
+	}
 	//----------------------------------------------------------------------------
 	//
 	//					GAF methods			
@@ -381,8 +401,19 @@ public class GAF extends Node{
 		else if((this.state == msg.state) && (this.gridID == msg.gridID)) {
 			
 			if(energyTd < msg.energyRemaining) {
-				this.state = States.sleep;
-				this.ts = msg.enat;
+				
+				if(this.state == States.active) {
+					this.state = States.sleep;
+					this.ts = msg.enat;
+				}
+				else {
+					this.isSleep = true;
+					if(energyRemaining < msg.energyRemaining) {
+						this.ts = msg.enat;
+						energyRemaining = msg.energyRemaining;
+					}
+					
+				}				
 			}
 		}
 		else if(this.gridID != msg.gridID){
@@ -517,11 +548,11 @@ public class GAF extends Node{
 	}
 	
 	/**
-	 * Check if the node has energy to power up after full drain battery in harvesting
+	 * Check if the node has energy to power up afhasEnergyter full drain battery in harvesting
 	 * @return true if has energy. False if don't have energy
 	 */
 	public boolean hasEnergyPowerUp() {
-		if(battery.getEnergiaAtual() >= battery.getEnergiaEnvio()*100) 
+		if(battery.getEnergiaAtual() >= battery.getEnergiaEnvio()*500) 
 			return true;
 				
 		return false;
@@ -539,7 +570,8 @@ public class GAF extends Node{
 			 */
 			
 			
-			td = 10;			
+			td = 10;	
+			ta = calculateTimeSend();
 			enat = ta;
 			
 			battery.gastaEnergiaEnvio();			
@@ -560,6 +592,7 @@ public class GAF extends Node{
 	/**
 	 * Make process of active mode (based in GAF)
 	 */
+	double deleteme2 = 0;
 	public void activeMode() {
 		
 		if(!startTaTimer) {
@@ -574,13 +607,14 @@ public class GAF extends Node{
 			sendTimer = new SendTimer(this);
 			sendTimer.startRelative(ta/2, GAF.this);
 			startSendTimer = true;
+			deleteme2 = (ta/2);
 		}
 		
 		enat = enat - 1;
 		
 		if(!startTdTimer && (enat > td)) {			
 			
-			tdTimer = new TdTimer(ID, gridID, enat, state, this, battery.getEnergiaAtual());
+			tdTimer = new TdTimer(ID, gridID, enat- td-6, state, this, battery.getEnergiaAtual());
 			tdTimer.startRelative(td, GAF.this);
 			startTdTimer = true;
 		}	
@@ -683,18 +717,18 @@ public class GAF extends Node{
 		else
 			solarIntensity = CustomGlobal.intensidadeSolar;
 		
-		//double controlEnergy = (((battery.getEnergiaAtual()/constBattery) - maxBatteryEnergy)/(minBatteryEnergy - maxBatteryEnergy));
-		//double controlSolarInt = (((constIntensity*solarIntensity) - maxSolarIntensity)/(minSolarIntensity - maxSolarIntensity));
-		//double time = ((maxTimeBetweenSends - minTimeBetweenSends)*(controlEnergy + controlSolarInt) + 2*minTimeBetweenSends)/2;
+		double controlEnergy = (((battery.getEnergiaAtual()/constBattery) - maxBatteryEnergy)/(minBatteryEnergy - maxBatteryEnergy));
+		double controlSolarInt = (((constIntensity*solarIntensity) - maxSolarIntensity)/(minSolarIntensity - maxSolarIntensity));
+		double time = ((maxTimeBetweenSends - minTimeBetweenSends)*(controlEnergy + controlSolarInt) + 2*minTimeBetweenSends)/2;
 		
-		double c1 = ((maxTimeBetweenSends*Math.pow(maxSolarIntensity, 2) - minTimeBetweenSends*Math.pow(minSolarIntensity, 2))/((Math.pow(maxSolarIntensity, 2) - Math.pow(minSolarIntensity, 2))));
+		//double c1 = ((maxTimeBetweenSends*Math.pow(maxSolarIntensity, 2) - minTimeBetweenSends*Math.pow(minSolarIntensity, 2))/((Math.pow(maxSolarIntensity, 2) - Math.pow(minSolarIntensity, 2))));
 		
-		double c2 = ((maxTimeBetweenSends*Math.pow(maxBatteryEnergy, 2) - minTimeBetweenSends*Math.pow(minBatteryEnergy, 2))/((Math.pow(maxBatteryEnergy, 2) - Math.pow(minBatteryEnergy, 2))));
+		//double c2 = ((maxTimeBetweenSends*Math.pow(maxBatteryEnergy, 2) - minTimeBetweenSends*Math.pow(minBatteryEnergy, 2))/((Math.pow(maxBatteryEnergy, 2) - Math.pow(minBatteryEnergy, 2))));
 		
-		double a  = (minTimeBetweenSends - maxTimeBetweenSends)*(((Math.pow(battery.getEnergiaAtual(),2))/(Math.pow(maxBatteryEnergy,2) - Math.pow(minBatteryEnergy,2)))+
-					((Math.pow(solarIntensity,2))/(Math.pow(maxSolarIntensity,2) - Math.pow(minSolarIntensity,2))));
+		//double a  = (minTimeBetweenSends - maxTimeBetweenSends)*(((Math.pow(battery.getEnergiaAtual(),2))/(Math.pow(maxBatteryEnergy,2) - Math.pow(minBatteryEnergy,2)))+
+					//((Math.pow(solarIntensity,2))/(Math.pow(maxSolarIntensity,2) - Math.pow(minSolarIntensity,2))));
 		
-		double time = (a + c1+ c2)/2;
+		//double time = (a + c1+ c2)/2;
 		
 		if(time <= minTimeBetweenSends)
 			time = minTimeBetweenSends;
@@ -729,7 +763,7 @@ public class GAF extends Node{
 			}
 			else{
 				
-				System.out.printf("%d:", CustomGlobal.hora);
+				System.out.printf("%d:ta = calculateTimeSend();", CustomGlobal.hora);
 			}
 			
 			if(CustomGlobal.minuto < 10){
@@ -755,7 +789,7 @@ public class GAF extends Node{
 			System.out.print("Dia: " + Boolean.valueOf(CustomGlobal.dia));
 			System.out.print(" | Carregando: " + Boolean.valueOf(CustomGlobal.dia));
 			
-			if(CustomGlobal.dia){
+			if(CustomGlobal.dia){ta = calculateTimeSend();
 				deleteme += battery.getEnergiaPainel();
 				System.out.printf(" (%f) | (%f) ",  battery.getEnergiaPainel(), deleteme);
 				
@@ -859,6 +893,7 @@ public void generateLog(){
 			if(ID == 1) {	
 				log = Logging.getLogger(simulationType +"_Simulacao_" + nameDir + "/NosMortos.csv");
 				log.logln(Global.currentTime/3600 +"," + deadNode);
+				System.out.println(Global.currentTime/3600 +" \t" + deadNode);
 				deadNode = 0;
 			}
 			

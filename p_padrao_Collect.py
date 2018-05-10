@@ -4,15 +4,15 @@ import datetime
 import math
 
 # Variaveis da simulacao
-num_nos = 1
+num_nos = 529
 simulacoes = 1
 
 raio = 30
 densidade = 0.03
 tipoSimulacao = 'padrao'
 num_rounds =  int(86400 * 4)
-multiplicadorIntensidade = 0.1
-maxTimeBetweenSends = 7200 
+multiplicadorIntensidade = 0.4
+maxTimeBetweenSends = 7200
 minTimeBetweenSends = 120
 maxEnergyOfBattery = 1000 
 minEnergyOfBattery = 0
@@ -20,7 +20,7 @@ maxSolarIntensity = 1000 * multiplicadorIntensidade
 minSolarIntensity = 0
 wattPico = 0.15
 constBattery = 1	# Divisor
-constIntensity = 1  # Multiplicador
+constIntensity = 2  # Multiplicador
 
 
 # Gera um arquivo para logs

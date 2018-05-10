@@ -63,8 +63,14 @@ public class TdTimer extends Timer {
 				}				
 			}
 			
-			this.gaf.state = States.active;
-			this.gaf.startTdTimer = false;				
+			if(this.gaf.isSleep) {
+				this.gaf.state = States.sleep;
+			}
+			else {
+				this.gaf.state = States.active;
+				this.gaf.startTdTimer = false;				
+			}
+			
 		}		
 	}
 }
