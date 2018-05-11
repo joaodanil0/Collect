@@ -893,7 +893,6 @@ public void generateLog(){
 			if(ID == 1) {	
 				log = Logging.getLogger(simulationType +"_Simulacao_" + nameDir + "/NosMortos.csv");
 				log.logln(Global.currentTime/3600 +"," + deadNode);
-				System.out.println(Global.currentTime/3600 +" \t" + deadNode);
 				deadNode = 0;
 			}
 			
