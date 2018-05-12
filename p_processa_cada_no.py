@@ -1,11 +1,13 @@
+#! /usr/bin/env python3
+
 import pandas
 import numpy
 import sys
 
 simulacoes = int(sys.argv[1])
 num_nos = int(sys.argv[2])
-
-total_horas = 24*4
+num_rounds = int(sys.argv[3])
+total_horas = int(num_rounds/3600)
 
 no = numpy.zeros((total_horas*60,7))
 

@@ -66,7 +66,7 @@ import sinalgo.tools.statistics.Distribution;
  */
 public class Main{
 	
-	private static Runtime runtime; 
+	public static Runtime runtime; 
 	public static String[] cmdLineArgs; // the command line arguments
 	
 	/**

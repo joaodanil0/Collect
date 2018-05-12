@@ -1,16 +1,18 @@
+#! /usr/bin/env python3
+
 import os
 import shutil
 import datetime
 import math
 
 # Variaveis da simulacao
-num_nos = 529
-simulacoes = 1
+num_nos = 5
+simulacoes = 33
 
 raio = 30
 densidade = 0.03
 tipoSimulacao = 'padrao'
-num_rounds =  int(86400 * 4)
+num_rounds =  int(86400 * 1)
 multiplicadorIntensidade = 0.4
 maxTimeBetweenSends = 7200
 minTimeBetweenSends = 120
@@ -20,7 +22,7 @@ maxSolarIntensity = 1000 * multiplicadorIntensidade
 minSolarIntensity = 0
 wattPico = 0.15
 constBattery = 1	# Divisor
-constIntensity = 2  # Multiplicador
+constIntensity = 1  # Multiplicador
 
 
 # Gera um arquivo para logs
@@ -47,7 +49,7 @@ for simulacao in range(1, simulacoes+1):
 			debbugfile.write('Iniciando ' + tipoSimulacao+ '_Simulacao_' + str(simulacao))
 			
 			# chama a simulacao faltante
-			os.system('python3 p_varia_' + tipoSimulacao + '.py ' + str(num_nos) + ' ' + str(simulacoes) + ' ' + str(simulacao) + ' ' + 
+			os.system('./p_varia_' + tipoSimulacao + '.py ' + str(num_nos) + ' ' + str(simulacoes) + ' ' + str(simulacao) + ' ' + 
 																	str(raio) + ' ' + str(densidade) + ' ' + str(tipoSimulacao) + ' ' + 
 																	str(num_rounds) + ' ' + str(multiplicadorIntensidade) + ' ' + str(maxTimeBetweenSends) + ' ' +
 																	str(minTimeBetweenSends) + ' ' + str(maxEnergyOfBattery) + ' ' + str(minEnergyOfBattery) + ' ' +
@@ -62,7 +64,7 @@ for simulacao in range(1, simulacoes+1):
 			debbugfile.write('Iniciando ' + tipoSimulacao+ '_Simulacao_' + str(simulacao))
 			
 			# chama a simulacao faltante
-			os.system('python3 p_varia_' + tipoSimulacao + '.py ' + str(num_nos) + ' ' + str(simulacoes) + ' ' + str(simulacao) + ' ' + 
+			os.system('./p_varia_' + tipoSimulacao + '.py ' + str(num_nos) + ' ' + str(simulacoes) + ' ' + str(simulacao) + ' ' + 
 																	str(raio) + ' ' + str(densidade) + ' ' + str(tipoSimulacao) + ' ' + 
 																	str(num_rounds) + ' ' + str(multiplicadorIntensidade) + ' ' + str(maxTimeBetweenSends) + ' ' +
 																	str(minTimeBetweenSends) + ' ' + str(maxEnergyOfBattery) + ' ' + str(minEnergyOfBattery) + ' ' +

@@ -1,3 +1,5 @@
+#! /usr/bin/env python3
+
 import math
 import os
 import sys
@@ -59,5 +61,5 @@ for j in range(simulacoes_res,simulacoes+1):
 		    ")
 			
 
-os.system('python3 p_processa_' + tipoSimulacao + '.py ' + str(simulacoes) + ' ' + str(num_nos))
-os.system('python3 p_processa_cada_no.py ' + str(simulacoes) + ' ' + str(num_nos))
+os.system('./p_processa_' + tipoSimulacao + '.py ' + str(simulacoes) + ' ' + str(num_nos) + ' '+ str(num_rounds))
+os.system('./p_processa_cada_no.py ' + str(simulacoes) + ' ' + str(num_nos) + ' ' + str(num_rounds))

@@ -8,6 +8,7 @@ import sinalgo.nodes.Node;
 import sinalgo.nodes.messages.Inbox;
 import sinalgo.nodes.messages.Message;
 import sinalgo.runtime.Global;
+import sinalgo.runtime.Main;
 import sinalgo.tools.logging.Logging;
 
 import java.awt.Color;
@@ -99,7 +100,7 @@ public class Sink extends Node{
 	@Override
 	public void postStep() {
 		
-		if(Global.currentTime == 345600){
+		if(Global.currentTime == Main.runtime.getNumberOfRounds()){
 			
 			double percentPcktArrived = (pcktsReceivedFromNetwork/pcktsSentByNetwork)*100;
 		 	
