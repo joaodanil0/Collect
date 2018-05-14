@@ -23,14 +23,19 @@ minSolarIntensity = sys.argv[14]
 wattPico = sys.argv[15]
 constBattery = sys.argv[16]
 constIntensity = sys.argv[17]
+varia_min = int(sys.argv[18])
+varia_max = int(sys.argv[19])
+varia_tic = int(sys.argv[20])
+varia_res = int(sys.argv[21])
 
+area = int(num_nos)/float(densidade)
+lado = int(math.sqrt(area))
 
-area = int(num_nos)/float(densidade);
-lado = int(math.sqrt(area));
-
-for j in range(simulacoes_res,simulacoes+1):
-		#
-	os.system("java -cp binaries/bin/ sinalgo.Run 							\
+for i in range(varia_res, varia_max+1,varia_tic):
+	    
+	for j in range(simulacoes_res,simulacoes+1):
+		
+		os.system("java -cp binaries/bin/ sinalgo.Run 						\
 			-batch 								  							\
 			-project Collect 					  							\
 			-gen "+ num_nos + " Collect:GAF  Collect:Grid C=UDG        		\
@@ -54,13 +59,12 @@ for j in range(simulacoes_res,simulacoes+1):
 			wattPico/power=" + wattPico +" 									\
 		    radiationMultiplier/multiplier=" + multiplicadorIntensidade + " \
 																			\
-			nameDir/name=" + str(j) + "										\
+			nameDir/name=" + str(i) + str(j) + "							\
 		    simulationType/type=" + tipoSimulacao + "		    			\
 																			\
 			constBattery/number=" + constBattery + " 						\
 		    constIntensity/number=" + constIntensity + "					\
 		    ")
-			
-
-os.system('./p_processa_' + tipoSimulacao + '.py ' + str(simulacoes) + ' ' + str(num_nos) + ' '+ str(num_rounds))
-os.system('./p_processa_cada_no.py ' + str(simulacoes) + ' ' + str(num_nos) + ' ' + str(num_rounds))
+				
+os.system('./r_processa_' + tipoSimulacao + '.py ' + str(simulacoes) + ' ' + str(num_nos) + ' ' + str(varia_min) + ' ' + \
+		  str(varia_max) + ' '+ str(varia_tic))

@@ -101,8 +101,13 @@ public class Sink extends Node{
 	public void postStep() {
 		
 		if(Global.currentTime == Main.runtime.getNumberOfRounds()){
+						
 			
 			double percentPcktArrived = (pcktsReceivedFromNetwork/pcktsSentByNetwork)*100;
+			
+			if(pcktsSentByNetwork == 0)
+				percentPcktArrived = 0;			
+			
 		 	
 			log = Logging.getLogger(simulationType + "_SimulacaoTX_" + nameDir + "/TXentrega.csv");
 			log.logln("Porcentagem de pacotes recebidos,pacotes recebidos,pacotes enviados");
@@ -114,6 +119,10 @@ public class Sink extends Node{
 			log = Logging.getLogger(simulationType + "_Simulacao_" + nameDir + "/EntregasPorHora.csv");
 			log.logln("Hora,Pacotes recebidos por hora, Pacotes enviados por hora, porcentagem de pacotes entregues");
 			double percentDeliveredHours = (pcktsReceivedhour/pcktsSenthour)*100;
+			
+			if(pcktsSenthour == 0)
+				percentDeliveredHours = 0;
+			
 			log.logln(Global.currentTime/3600 +"," + pcktsReceivedhour + "," + pcktsSenthour + "," + Double.toString(percentDeliveredHours));						
 			pcktsReceivedhour = 0;
 			pcktsSenthour = 0;
@@ -123,6 +132,10 @@ public class Sink extends Node{
 			log = Logging.getLogger(simulationType + "_Simulacao_" + nameDir + "/EntregasPorHora.csv");
 			
 			double percentDeliveredHours = (pcktsReceivedhour/pcktsSenthour)*100;
+			
+			if(pcktsSenthour == 0)
+				percentDeliveredHours = 0;
+			
 			log.logln(Global.currentTime/3600 +"," + pcktsReceivedhour + "," + pcktsSenthour + "," + Double.toString(percentDeliveredHours));				
 			pcktsReceivedhour = 0;
 			pcktsSenthour = 0;
