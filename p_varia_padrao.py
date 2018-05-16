@@ -23,6 +23,7 @@ minSolarIntensity = sys.argv[14]
 wattPico = sys.argv[15]
 constBattery = sys.argv[16]
 constIntensity = sys.argv[17]
+constControl = sys.argv[18]
 
 
 area = int(num_nos)/float(densidade);
@@ -59,6 +60,8 @@ for j in range(simulacoes_res,simulacoes+1):
 																			\
 			constBattery/number=" + constBattery + " 						\
 		    constIntensity/number=" + constIntensity + "					\
+																			\
+			constControl/number=" + constControl + "						\
 		    ")
 			
 

@@ -245,6 +245,8 @@
 <constBattery number="0"/>
 <constIntensity number="0"/>
 
+<constControl number="0"/>
+
 
 
 <MessageTransmission ConstantTime="1"/>

@@ -222,6 +222,8 @@ public class GAF extends Node{
 	 */
 	public double constIntensity;
 	
+	public double constControl;
+	
 	@Override
 	public void handleMessages(Inbox inbox) {
 	
@@ -703,6 +705,16 @@ public class GAF extends Node{
 			
 			e.printStackTrace();
 		}
+		
+		
+		try {
+			constControl = Configuration.getDoubleParameter("constControl/number");
+		} 
+		catch (CorruptConfigurationEntryException e) {			
+			e.printStackTrace();
+		}
+		
+		
 	}
 	
 	/**
@@ -717,9 +729,19 @@ public class GAF extends Node{
 		else
 			solarIntensity = CustomGlobal.intensidadeSolar;
 		
-		double controlEnergy = (((battery.getEnergiaAtual()/constBattery) - maxBatteryEnergy)/(minBatteryEnergy - maxBatteryEnergy));
-		double controlSolarInt = (((constIntensity*solarIntensity) - maxSolarIntensity)/(minSolarIntensity - maxSolarIntensity));
-		double time = ((maxTimeBetweenSends - minTimeBetweenSends)*(controlEnergy + controlSolarInt) + 2*minTimeBetweenSends)/2;
+		double timeBattery = ((maxTimeBetweenSends - minTimeBetweenSends)/(minBatteryEnergy - maxBatteryEnergy))*(battery.getEnergiaAtual())  - 
+	              			 ((maxTimeBetweenSends - minTimeBetweenSends)/(minBatteryEnergy - maxBatteryEnergy))*maxBatteryEnergy +
+	              			   minTimeBetweenSends;
+		
+		double timeIntensi = ((maxTimeBetweenSends - minTimeBetweenSends)/(minSolarIntensity - maxSolarIntensity))*(solarIntensity)  - 
+	              	  		 ((maxTimeBetweenSends - minTimeBetweenSends)/(minSolarIntensity - maxSolarIntensity))*maxSolarIntensity +
+	              	           minTimeBetweenSends;
+		
+		double time = constControl*timeBattery + (1-constControl)*timeIntensi;
+		
+		//double controlEnergy = (((battery.getEnergiaAtual()/constBattery) - maxBatteryEnergy)/(minBatteryEnergy - maxBatteryEnergy));
+		//double controlSolarInt = (((constIntensity*solarIntensity) - maxSolarIntensity)/(minSolarIntensity - maxSolarIntensity));
+		//double time = ((maxTimeBetweenSends - minTimeBetweenSends)*(controlEnergy + controlSolarInt) + 2*minTimeBetweenSends)/2;
 		
 		//double c1 = ((maxTimeBetweenSends*Math.pow(maxSolarIntensity, 2) - minTimeBetweenSends*Math.pow(minSolarIntensity, 2))/((Math.pow(maxSolarIntensity, 2) - Math.pow(minSolarIntensity, 2))));
 		

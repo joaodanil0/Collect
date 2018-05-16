@@ -7,12 +7,12 @@ import math
 
 # Variaveis da simulacao
 num_nos = 5
-simulacoes = 33
+simulacoes = 3
 
 raio = 30
 densidade = 0.03
 tipoSimulacao = 'padrao'
-num_rounds =  int(86400 * 1)
+num_rounds =  int(86400 * 3)
 multiplicadorIntensidade = 0.4
 maxTimeBetweenSends = 7200
 minTimeBetweenSends = 120
@@ -23,6 +23,7 @@ minSolarIntensity = 0
 wattPico = 0.15
 constBattery = 1	# Divisor
 constIntensity = 1  # Multiplicador
+constControl = 0.9
 
 
 # Gera um arquivo para logs
@@ -54,7 +55,7 @@ for simulacao in range(1, simulacoes+1):
 																	str(num_rounds) + ' ' + str(multiplicadorIntensidade) + ' ' + str(maxTimeBetweenSends) + ' ' +
 																	str(minTimeBetweenSends) + ' ' + str(maxEnergyOfBattery) + ' ' + str(minEnergyOfBattery) + ' ' +
 																	str(maxSolarIntensity) + ' ' + str(minSolarIntensity) + ' ' + str(wattPico) + ' ' +
-																	str(constBattery) + ' ' + str(constIntensity))
+																	str(constBattery) + ' ' + str(constIntensity) + ' ' + str(constControl))
 																	
 			
 			debbugfile.write(' ... ok\n')
@@ -69,11 +70,11 @@ for simulacao in range(1, simulacoes+1):
 																	str(num_rounds) + ' ' + str(multiplicadorIntensidade) + ' ' + str(maxTimeBetweenSends) + ' ' +
 																	str(minTimeBetweenSends) + ' ' + str(maxEnergyOfBattery) + ' ' + str(minEnergyOfBattery) + ' ' +
 																	str(maxSolarIntensity) + ' ' + str(minSolarIntensity) + ' ' + str(wattPico) + ' ' +
-																	str(constBattery) + ' ' + str(constIntensity))
+																	str(constBattery) + ' ' + str(constIntensity) + ' ' + str(constControl))
 			debbugfile.write(' ... ok\n')				
 	
 		break
-		
+
 debbugfile.close()
 
 
