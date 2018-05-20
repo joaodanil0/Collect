@@ -6,7 +6,7 @@ import datetime
 import math
 
 # Variaveis da simulacao
-num_nos = 5
+num_nos = 25
 simulacoes = 3
 
 raio = 30
@@ -23,8 +23,7 @@ minSolarIntensity = 0
 wattPico = 0.15
 constBattery = 1	# Divisor
 constIntensity = 1  # Multiplicador
-constControl = 0.9
-
+constControl = 0.85
 
 # Gera um arquivo para logs
 debbugfile = open('logs_simulacoes/' + tipoSimulacao + '_sem.log', 'a+')
@@ -75,7 +74,6 @@ for simulacao in range(1, simulacoes+1):
 	
 		break
 
+os.system('./p_processa_' + tipoSimulacao + '.py ' + str(simulacoes) + ' ' + str(num_nos) + ' '+ str(num_rounds))
+#os.system('./p_processa_cada_no.py ' + str(simulacoes) + ' ' + str(num_nos) + ' ' + str(num_rounds))
 debbugfile.close()
-
-
-

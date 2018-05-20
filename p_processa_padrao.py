@@ -24,11 +24,11 @@ for j in range(simulacoes):
 	dataDelivered = pandas.read_csv('logs/padrao_Simulacao_' + str(j+1) + '/EntregasPorHora.csv')
 	
 	for k in range(total_horas):
-		mean_hour[k][j] = data.loc[60*num_nos*k:60*num_nos*(k+1)-1]['Energia do no'].mean()		
-		sum_dataPcts_hours[k][j] = dataHours.loc[k]['Pacotes enviados por hora']
-		sum_configPcts_hours[k][j] = dataHours.loc[k]['Pacotes configuracao por hora']
-		sum_pcts_hours[k][j] = dataHours.loc[k]['enviados+configuracao']
-		dead_nodes[k][j] = dataNodes.loc[k]['Quantidade de nos mortos']
+		mean_hour[k][j] = data.loc[num_nos*k:num_nos*(k+1)-1]['Energia do no'].mean()		
+		sum_dataPcts_hours[k][j] = dataHours.loc[num_nos*k:num_nos*(k+1)-1]['Pacotes enviados por hora'].sum()
+		sum_configPcts_hours[k][j] = dataHours.loc[num_nos*k:num_nos*(k+1)-1]['Pacotes configuracao por hora'].sum()
+		sum_pcts_hours[k][j] = dataHours.loc[num_nos*k:num_nos*(k+1)-1]['enviados+configuracao'].sum()
+		dead_nodes[k][j] = dataNodes.loc[num_nos*k:num_nos*(k+1)-1]['Quantidade de nos mortos'].sum()
 		pckt_delivered[k][j] = dataDelivered.loc[k][' porcentagem de pacotes entregues']
 
 def frame(data_frame):

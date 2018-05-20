@@ -15,6 +15,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
 
+import projects.Collect.CustomGlobal;
 import projects.Collect.nodes.messages.DataMessage;
 import projects.Collect.nodes.timers.FloodingTimer;
 
@@ -24,12 +25,12 @@ public class Sink extends Node{
 	/**
 	 * Save the id messages received
 	 */
-	public ArrayList<Integer>idMessages = new ArrayList<>();
+	public ArrayList<Double>idMessages = new ArrayList<>();
 	
 	/**
 	 * Compute the quantity of packets was send from all nodes
 	 */
-	static public double pcktsSentByNetwork = 0;
+	static public double pcktsSentByNetwork = 0; 
 	
 	/**
 	 * Compute the quantity of packets the sink received from network
@@ -39,7 +40,7 @@ public class Sink extends Node{
 	/**
 	 * Manage the log of simulation
 	 */
-	Logging log;
+	public Logging log;
 	
 	/**
 	 * Give a name of simulation (Density, range e etc.)
@@ -52,14 +53,22 @@ public class Sink extends Node{
 	public int nameDir;
 	
 	/**
-	 * Compute a quantity of packets received in each hour
+	 * Compute a quantity of packets received in each hour (initialize with number of hours)
 	 */
-	public double pcktsReceivedhour = 0;
+	public double[] pcktsReceivedhour = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+									     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+									     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+									     0,0,0,0,0,0,0,0,0,0,0,0
+										};
 	
 	/**
-	 * Compute a quantity of packets sent by network each hour
+	 * Compute a quantity of packets sent by network each hour (initialize with number of hours)
 	 */
-	public static double pcktsSenthour = 0;
+	public static double[] pcktsSenthour = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+										    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+										    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+										    0,0,0,0,0,0,0,0,0,0,0,0
+										   };
 	
 	@Override
 	public void handleMessages(Inbox inbox) {
@@ -68,28 +77,28 @@ public class Sink extends Node{
 			
 			Message msg = inbox.next();	
 			
-			if(msg instanceof DataMessage) {
-				
+			if(msg instanceof DataMessage) {				
 				processDataMessage((DataMessage) msg);
 			}
 		}
 	}	
-
+	
 	@Override
 	public void preStep() {
 		
 	}
-
-	@Override
+	
 	/**
-	 * Send a flooding package to network with the Sink position
+	 * Send a flooding packet to network with the Sink position
 	 */
+	@Override	
 	public void init() {
-		
+				
 		setSinkPosition();		
 		getParamLog();
 		FloodingTimer t = new FloodingTimer(ID, getPosition(), ID, 0, null);
 		t.startRelative(1, Sink.this);
+		
 	}
 
 	@Override
@@ -99,48 +108,24 @@ public class Sink extends Node{
 
 	@Override
 	public void postStep() {
-		
+				
 		if(Global.currentTime == Main.runtime.getNumberOfRounds()){
 						
 			
 			double percentPcktArrived = (pcktsReceivedFromNetwork/pcktsSentByNetwork)*100;
-			
-			if(pcktsSentByNetwork == 0)
-				percentPcktArrived = 0;			
-			
-		 	
+					
+					 	
 			log = Logging.getLogger(simulationType + "_SimulacaoTX_" + nameDir + "/TXentrega.csv");
 			log.logln("Porcentagem de pacotes recebidos,pacotes recebidos,pacotes enviados");
 			log.logln(Double.toString(percentPcktArrived) + "," + pcktsReceivedFromNetwork + "," + pcktsSentByNetwork);
 			
-		}
-		
-		if(Global.currentTime == 1) {
 			log = Logging.getLogger(simulationType + "_Simulacao_" + nameDir + "/EntregasPorHora.csv");
-			log.logln("Hora,Pacotes recebidos por hora, Pacotes enviados por hora, porcentagem de pacotes entregues");
-			double percentDeliveredHours = (pcktsReceivedhour/pcktsSenthour)*100;
-			
-			if(pcktsSenthour == 0)
-				percentDeliveredHours = 0;
-			
-			log.logln(Global.currentTime/3600 +"," + pcktsReceivedhour + "," + pcktsSenthour + "," + Double.toString(percentDeliveredHours));						
-			pcktsReceivedhour = 0;
-			pcktsSenthour = 0;
-		}
-		
-		if(Global.currentTime % 3600 == 0) {
-			log = Logging.getLogger(simulationType + "_Simulacao_" + nameDir + "/EntregasPorHora.csv");
-			
-			double percentDeliveredHours = (pcktsReceivedhour/pcktsSenthour)*100;
-			
-			if(pcktsSenthour == 0)
-				percentDeliveredHours = 0;
-			
-			log.logln(Global.currentTime/3600 +"," + pcktsReceivedhour + "," + pcktsSenthour + "," + Double.toString(percentDeliveredHours));				
-			pcktsReceivedhour = 0;
-			pcktsSenthour = 0;
-	
-		}
+			log.logln("Hora,Pacotes recebidos por hora, Pacotes enviados por hora, porcentagem de pacotes entregues");					
+			for(int i = 0; i < (int)(Main.runtime.getNumberOfRounds()/3600); i++) {
+				double percentDeliveredHours = (pcktsReceivedhour[i]/pcktsSenthour[i])*100;
+				log.logln(i +"," + pcktsReceivedhour[i] + "," + pcktsSenthour[i] + "," + Double.toString(percentDeliveredHours));				
+			}				
+		}		
 	}
 
 	@Override
@@ -172,7 +157,7 @@ public class Sink extends Node{
 	 * @param idMessage Message to be checked
 	 * @return True if packet received, False if not received
 	 */
-	public boolean isPcktReceived(int idMessage) {
+	public boolean isPcktReceived(double idMessage) {
 		
 		for(int i = 0; i< idMessages.size(); i++){			
 			
@@ -184,17 +169,15 @@ public class Sink extends Node{
 		return false;	
 	}
 	
-	double old = 0;
 	private void processDataMessage(DataMessage msg) {
+		
 		
 		if(!isPcktReceived(msg.idMessage)){
 			
-			
 			idMessages.add(msg.idMessage);
 			pcktsReceivedFromNetwork++;	
-			pcktsReceivedhour++;
-		}
-		
+			pcktsReceivedhour[msg.sendHour]++;
+		}		
 	}
 	
 	public void getParamLog() {
@@ -217,6 +200,43 @@ public class Sink extends Node{
 			
 			e.printStackTrace();
 		}
+	}
+	
+	public static String showTime() {
+		
+		String aux;
+			
+		aux = "";
+		
+		if(CustomGlobal.hora < 10){
+			
+			aux += "0" + CustomGlobal.hora;
+		}
+		else{
+			
+			aux += CustomGlobal.hora;
+		}
+		
+		if(CustomGlobal.minuto < 10){
+			
+			aux += ":0" + CustomGlobal.minuto;
+		}
+		else{
+			
+			aux += ":" + CustomGlobal.minuto;
+		}
+		
+		if(CustomGlobal.segundo < 10){
+			
+			aux += ":0" + CustomGlobal.segundo;
+			
+		}
+		else{
+			
+			aux += ":" +CustomGlobal.segundo;
+		}
+		
+		return aux;
 	}
 
 	

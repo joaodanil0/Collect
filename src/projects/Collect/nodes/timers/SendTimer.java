@@ -1,5 +1,8 @@
 package projects.Collect.nodes.timers;
 
+import java.util.Random;
+
+import projects.Collect.CustomGlobal;
 import projects.Collect.nodes.messages.DataMessage;
 import projects.Collect.nodes.nodeImplementations.GAF;
 import projects.Collect.nodes.nodeImplementations.Sink;
@@ -12,28 +15,29 @@ public class SendTimer extends Timer {
 	 * The instance of the node that call the timer
 	 */
 	public GAF gaf;
+	public Random random = new Random();
 	
 	public SendTimer(GAF gaf) {
 		
 		this.gaf = gaf;
 	}
-	public static double old;
+	
 	@Override
 	public void fire() {
 		
 		if(this.gaf.state == States.active) {
 			
-			int idMessage = Integer.parseInt(this.gaf.ID + "" + this.gaf.dataPctSent++);
+			double idMessage = this.gaf.ID*100000  + (random.nextInt(999) + random.nextGaussian());
 			
 			if(this.gaf.hasEnergy()) {
-				GAF.dataPctsSentByHour++;
+				this.gaf.dataPctsSentByHour++;
 				Sink.pcktsSentByNetwork++;
-				Sink.pcktsSenthour++;
-				DataMessage msg = new DataMessage(this.gaf.ID, this.gaf.sinkDistance, idMessage, this.gaf.gridID);
+				this.gaf.dataPctSent++;								
+				Sink.pcktsSenthour[CustomGlobal.hora + 24*CustomGlobal.num_dias]++;	
+				DataMessage msg = new DataMessage(this.gaf.ID, this.gaf.sinkDistance, idMessage, this.gaf.gridID, CustomGlobal.hora + 24*CustomGlobal.num_dias);
 				this.node.broadcast(msg);
 				this.gaf.battery.gastaEnergiaEnvio();
 			}			
 		}
 	}
-
 }

@@ -4,8 +4,6 @@ import math
 import os
 import sys
 
-
-
 num_nos = sys.argv[1]
 simulacoes = int(sys.argv[2])
 simulacoes_res = int(sys.argv[3])
@@ -25,12 +23,11 @@ constBattery = sys.argv[16]
 constIntensity = sys.argv[17]
 constControl = sys.argv[18]
 
-
 area = int(num_nos)/float(densidade);
 lado = int(math.sqrt(area));
 
 for j in range(simulacoes_res,simulacoes+1):
-		#
+	#
 	os.system("java -cp binaries/bin/ sinalgo.Run 							\
 			-batch 								  							\
 			-project Collect 					  							\
@@ -63,7 +60,3 @@ for j in range(simulacoes_res,simulacoes+1):
 																			\
 			constControl/number=" + constControl + "						\
 		    ")
-			
-
-os.system('./p_processa_' + tipoSimulacao + '.py ' + str(simulacoes) + ' ' + str(num_nos) + ' '+ str(num_rounds))
-os.system('./p_processa_cada_no.py ' + str(simulacoes) + ' ' + str(num_nos) + ' ' + str(num_rounds))

@@ -3,6 +3,7 @@ package projects.Collect.nodes.nodeImplementations;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
+import java.util.Random;
 
 import projects.Collect.CustomGlobal;
 import projects.Collect.models.energyModels.Energy;
@@ -114,7 +115,14 @@ public class GAF extends Node{
 	 */
 	public double ts;
 	
+	/**
+	 * After time td the node verify the flag, to know the next state (if true = sleep, if false = active)
+	 */
 	public boolean isSleep = false;
+	
+	/**
+	 * During timer td the node receive the energy remaining of other nodes
+	 */
 	public double energyRemaining = 0;
 		
 	/**
@@ -125,7 +133,7 @@ public class GAF extends Node{
 	/**
 	 * How long the node stay in discovery mode
 	 */
-	public double td;
+	public int td;
 	
 	/**
 	 * Computes a quantity of data packets that have been sent
@@ -140,17 +148,17 @@ public class GAF extends Node{
 	/**
 	 * Computes a quantity of data packets that gave been sent by hours
 	 */
-	public static int dataPctsSentByHour = 0;
+	public int dataPctsSentByHour = 0;
 	
 	/**
 	 * Computes a quantity of Discovery packets that gave been sent by hours
 	 */
-	public static int confPctsSentByHour = 0;
+	public int confPctsSentByHour = 0;
 	
 	/**
 	 * Save the id messages received
 	 */
-	public ArrayList<Integer>idMessages = new ArrayList<>();
+	public ArrayList<Double>idMessages = new ArrayList<>();
 	
 	/**
 	 * Save the node ID from same virtual grid
@@ -195,7 +203,7 @@ public class GAF extends Node{
 	/**
 	 * Manage the log of simulation
 	 */
-	Logging log;
+	public Logging log;
 	
 	/**
 	 * Give a name of simulation (Density, range e etc.)
@@ -210,7 +218,7 @@ public class GAF extends Node{
 	/**
 	 * Compute the quantity of dead nodes at the network
 	 */
-	public static int deadNode = 0;
+	public int deadNode = 0;
 	
 	/**
 	 * The value that multiplier the current battery
@@ -222,7 +230,25 @@ public class GAF extends Node{
 	 */
 	public double constIntensity;
 	
+	/**
+	 * Set an error of GPS, get the true position and add a gaussian error
+	 */
+	public Position errorPosition = new Position();
+	
+	/**
+	 * Set the priority between battery and Solar intensity control
+	 */
 	public double constControl;
+	
+	/**
+	 * Verify if the node is dead
+	 */
+	boolean isDeadNode = false;
+	
+	/**
+	 * Generate a random number
+	 */
+	public Random random = new Random();
 	
 	@Override
 	public void handleMessages(Inbox inbox) {
@@ -265,6 +291,7 @@ public class GAF extends Node{
 	@Override
 	public void init() {
 		
+		errorPos();
 		divideGrid();
 		getEnergyOfBatery();
 		battery = new Energy(maxBatteryEnergy);
@@ -279,14 +306,14 @@ public class GAF extends Node{
 		
 	}
 	
-	boolean flag = false;
+	
 	@Override	
 	public void postStep() {
 				
 		//mostraInfo(1);
 		rechargeNode();
 						
-		if(isConfigured && hasEnergy() && (Global.currentTime >= 100) && !flag) {
+		if(isConfigured && hasEnergy() && (Global.currentTime >= 13) && !isDeadNode) {
 						
 			switch(state){
 				
@@ -316,11 +343,11 @@ public class GAF extends Node{
 			this.startTaTimer = false;
 			this.startTdTimer = false;
 			this.startTsTimer = false;
-			flag = true;
+			isDeadNode = true;
 		}
 
-		if(hasEnergyPowerUp() && flag) {
-			flag = false;
+		if(hasEnergyPowerUp() && isDeadNode) {
+			isDeadNode = false;
 			if(!startTsTimer) {
 				tsTimer = new TsTimer(this);
 				tsTimer.startRelative(1, GAF.this);
@@ -328,7 +355,7 @@ public class GAF extends Node{
 			}
 		}
 		
-		if(hasEnergy() && flag) {
+		if(hasEnergy() && isDeadNode) {
 			setColor(Color.GRAY);
 			battery.modoSleep();
 		}
@@ -345,7 +372,7 @@ public class GAF extends Node{
 	public String toString() {
 		return "Max Energy: "+ battery.getEnergiaMaxima() + "\n" + 
 			   "Energy: " + battery.getEnergiaAtual() + "\n" +
-			   "Time to Send:" + deleteme2 + "\n" +
+			   "Time to Send:" + ta/2 + "\n" +
 			   "Sleep Time: " + ts + "\n" + 
 			   "Enat: " + enat + "\n";
 	}
@@ -363,6 +390,35 @@ public class GAF extends Node{
 	}
 	
 	/**
+	 * Add an error in position of GPS
+	 */
+	public void errorPos() {
+		
+		double xPos = getPosition().xCoord + random.nextGaussian();
+		double yPos = getPosition().yCoord + random.nextGaussian();
+		
+		if(xPos < 0) {
+			errorPosition.xCoord = 0;
+		}
+		else if(xPos >= 0 && xPos <= Configuration.dimX) {
+			errorPosition.xCoord = xPos;
+		}
+		else if(xPos > Configuration.dimX) {
+			errorPosition.xCoord = Configuration.dimX;
+		}
+		
+		if(yPos < 0) {
+			errorPosition.yCoord = 0;
+		}
+		else if(yPos >= 0 && yPos <= Configuration.dimY) {
+			errorPosition.yCoord = yPos;
+		}
+		else if(yPos > Configuration.dimY) {
+			errorPosition.yCoord = Configuration.dimY;
+		}
+	}
+	
+	/**
 	 * Called every time that routing message came in the node
 	 * @param msg Data of routing message
 	 */
@@ -377,7 +433,7 @@ public class GAF extends Node{
 			isConfigured = true;
 			this.sinkPosition = msg.sinkPosition;
 			this.sinkId = msg.sinkId;
-			this.sinkDistance = getPosition().distanceTo(this.sinkPosition);
+			this.sinkDistance = errorPosition.distanceTo(this.sinkPosition);
 			FloodingTimer timer = new FloodingTimer(msg.sinkId, msg.sinkPosition, ID, gridID, this);
 			timer.startRelative(1, GAF.this);				
 		}
@@ -437,7 +493,7 @@ public class GAF extends Node{
 		
 		if((sinkDistance < msg.distanceSink) && !isPcktReceived(msg.idMessage) && hasEnergy()) {
 			
-			DataMessage msgReply = new DataMessage(msg.ID, sinkDistance, msg.idMessage, msg.gridMessage);
+			DataMessage msgReply = new DataMessage(msg.ID, sinkDistance, msg.idMessage, msg.gridMessage, msg.sendHour);
 			idMessages.add(msg.idMessage);
 			if(hasEnergy()) {
 				dataPctSent++;	
@@ -454,7 +510,7 @@ public class GAF extends Node{
 	 * @param idMessage Message to be checked
 	 * @return True if packet received, False if not received
 	 */
-	public boolean isPcktReceived(int idMessage) {
+	public boolean isPcktReceived(double idMessage) {
 		
 		for(int i = 0; i< idMessages.size(); i++){			
 			
@@ -479,11 +535,11 @@ public class GAF extends Node{
 			
 			for(int i = 0; i<= num_cell; i++){
 
-				if(getPosition().xCoord >= i*r && getPosition().xCoord < (i+1)*r){
+				if(errorPosition.xCoord >= i*r && errorPosition.xCoord < (i+1)*r){
 							
 					for(int j = 0; j <= num_cell; j++){
 					
-						if(getPosition().yCoord >= j*r && getPosition().yCoord < (j+1)*r){
+						if(errorPosition.yCoord >= j*r && errorPosition.yCoord < (j+1)*r){
 							
 							gridID = Integer.parseInt(i + "" + j);	
 							
@@ -566,13 +622,8 @@ public class GAF extends Node{
 	public void discoveryMode() {
 		
 		if(!startTdTimer) {
-			
-			/**
-			 * How long the node stay in discovery mode
-			 */
-			
-			
-			td = 10;	
+						
+			td = 2;	
 			ta = calculateTimeSend();
 			enat = ta;
 			
@@ -594,7 +645,6 @@ public class GAF extends Node{
 	/**
 	 * Make process of active mode (based in GAF)
 	 */
-	double deleteme2 = 0;
 	public void activeMode() {
 		
 		if(!startTaTimer) {
@@ -602,21 +652,20 @@ public class GAF extends Node{
 			taTimer = new TaTimer(this);
 			taTimer.startRelative(ta, GAF.this);
 			startTaTimer = true;
-			td = (ta/6);
+			td = (int)(ta/6);
 		}
 		
 		if(!startSendTimer) {
 			sendTimer = new SendTimer(this);
 			sendTimer.startRelative(ta/2, GAF.this);
 			startSendTimer = true;
-			deleteme2 = (ta/2);
 		}
 		
 		enat = enat - 1;
 		
 		if(!startTdTimer && (enat > td)) {			
 			
-			tdTimer = new TdTimer(ID, gridID, enat- td-6, state, this, battery.getEnergiaAtual());
+			tdTimer = new TdTimer(ID, gridID, enat- td, state, this, battery.getEnergiaAtual());
 			tdTimer.startRelative(td, GAF.this);
 			startTdTimer = true;
 		}	
@@ -718,7 +767,7 @@ public class GAF extends Node{
 	}
 	
 	/**
-	 * Calculate the time that node send a package
+	 * Calculate the time that node send a packet
 	 */
 	public double calculateTimeSend() {
 		
@@ -848,87 +897,44 @@ public class GAF extends Node{
 		}
 	}
 	
-public void generateLog(){
+	public void generateLog(){
 		
-		if(Global.currentTime == 1){
+		if(Global.currentTime == 1 && ID == 1){
+						
+			
 			log = Logging.getLogger(simulationType +"_Simulacao_" + nameDir + "/Energia.csv");
-			if(ID == 1) {
-				log.logln("Tempo decorrido,Energia do no,Coordenada X,Coordenada Y,Pacotes Enviados,Pacotes de confi"
+			log.logln("Tempo decorrido,Energia do no,Coordenada X,Coordenada Y,Pacotes Enviados,Pacotes de confi"
 						+ "guracao,Enviados+Configuracao");
-			}
-			
-			 
-			 log.logln(Double.toString(Global.currentTime/3600) + "," + Double.toString(battery.getEnergiaAtual())+ ","
-					 + Double.toString(getPosition().xCoord) + "," +  Double.toString(getPosition().yCoord) + ","
-					 + dataPctSent + "," + confPctSent + "," + (dataPctSent + confPctSent));
-			 
-			 
-			 
-			 
-			 if(ID == 1) {
-				 log = Logging.getLogger(simulationType +"_Simulacao_" + nameDir + "/PctsHora.csv");	
-				 log.logln("Hora,Pacotes enviados por hora,Pacotes configuracao por hora,enviados+configuracao");
-				 log.logln(Global.currentTime/3600 +"," + dataPctsSentByHour + "," + confPctsSentByHour + "," + (dataPctsSentByHour + confPctsSentByHour));
-				 
-				 dataPctsSentByHour = 0;
-				 confPctsSentByHour = 0;
-			 }
-			 			 
-			 
-			 
-			 if(!hasEnergy()) {
-				deadNode++;
-			 }
 				
-			
-			
-			if(ID == 1) {
-				log = Logging.getLogger(simulationType +"_Simulacao_" + nameDir + "/NosMortos.csv");
-				log.logln("Hora,Quantidade de nos mortos");
-				log.logln(Global.currentTime/3600 +"," + deadNode);
-				deadNode = 0;
-			}
-			
+			log = Logging.getLogger(simulationType +"_Simulacao_" + nameDir + "/PctsHora.csv");
+			log.logln("Hora,Pacotes enviados por hora,Pacotes configuracao por hora,enviados+configuracao");
 				
-			
-			 
-			 
-			 
+			log = Logging.getLogger(simulationType +"_Simulacao_" + nameDir + "/NosMortos.csv");
+			log.logln("Hora,Quantidade de nos mortos");
 		}
 		
-		if(Global.currentTime % 3600 == 0) {
+		if(CustomGlobal.minuto == 0 && CustomGlobal.segundo == 0) {
 			
-			
-			if(ID == 1) {
-				log = Logging.getLogger(simulationType +"_Simulacao_" + nameDir + "/PctsHora.csv");
-				log.logln(Global.currentTime/3600 +"," + dataPctsSentByHour + "," + confPctsSentByHour + "," + (dataPctsSentByHour + confPctsSentByHour));
-				 
-				dataPctsSentByHour = 0;
-				confPctsSentByHour = 0;
-			}			
-			
-			
-			if(!hasEnergy()) {
-				deadNode++;
-			}
-			
-			if(ID == 1) {	
-				log = Logging.getLogger(simulationType +"_Simulacao_" + nameDir + "/NosMortos.csv");
-				log.logln(Global.currentTime/3600 +"," + deadNode);
+			if(!hasEnergy())
+				deadNode = 1;
+			else
 				deadNode = 0;
-			}
 			
-		}
-		
-		if(Global.currentTime % 60 == 0){
-			log = Logging.getLogger(simulationType +"_Simulacao_" + nameDir + "/Energia.csv");
 			
-			log.logln(Double.toString(Global.currentTime/3600) + "," + Double.toString(battery.getEnergiaAtual()) + ","
-				  + Double.toString(getPosition().xCoord) + "," +  Double.toString(getPosition().yCoord) + "," 
-				  + dataPctSent + "," + confPctSent + "," + (dataPctSent + confPctSent));
+			log = Logging.getLogger(simulationType +"_Simulacao_" + nameDir + "/PctsHora.csv");
+			log.logln(Global.currentTime/3600 +"," + dataPctsSentByHour + "," + confPctsSentByHour + "," 
+					  + (dataPctsSentByHour + confPctsSentByHour));				 
+			dataPctsSentByHour = 0;
+			confPctsSentByHour = 0;
+				
+			log = Logging.getLogger(simulationType +"_Simulacao_" + nameDir + "/NosMortos.csv");
+			log.logln(Global.currentTime/3600 +"," + deadNode);
+			deadNode = 0;				
 			
-		}			
+			log = Logging.getLogger(simulationType +"_Simulacao_" + nameDir + "/Energia.csv");			
+			log.logln(Global.currentTime/3600 + "," + Double.toString(battery.getEnergiaAtual()) + ","
+				      + getPosition().xCoord + "," +  getPosition().yCoord + "," 
+				      + dataPctSent + "," + confPctSent + "," + (dataPctSent + confPctSent));
+		}		
 	}
-
-
 }

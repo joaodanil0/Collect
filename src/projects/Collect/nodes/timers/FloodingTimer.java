@@ -55,7 +55,7 @@ public class FloodingTimer extends Timer {
 		if(gaf != null) {
 			this.gaf.battery.gastaEnergiaEnvio();
 			this.gaf.confPctSent++;
-			GAF.confPctsSentByHour++;
+			this.gaf.confPctsSentByHour++;
 		}
 	}
 
