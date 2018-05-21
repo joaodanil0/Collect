@@ -23,6 +23,7 @@ minSolarIntensity = 0
 wattPico = 0.15
 constBattery = 1	# Divisor
 constIntensity = 1  # Multiplicador
+constControl = 0.85
 
 varia_min = 20
 varia_max = 60
@@ -59,7 +60,8 @@ for varia_atual in range(varia_min, varia_max+1, varia_tic):
 																	str(minTimeBetweenSends) + ' ' + str(maxEnergyOfBattery) + ' ' + str(minEnergyOfBattery) + ' ' +
 																	str(maxSolarIntensity) + ' ' + str(minSolarIntensity) + ' ' + str(wattPico) + ' ' +
 																	str(constBattery) + ' ' + str(constIntensity) + ' ' + str(varia_min) + ' ' + 
-																	str(varia_max) + ' ' + str(varia_tic) + ' ' + str(varia_atual))
+																	str(varia_max) + ' ' + str(varia_tic) + ' ' + str(varia_atual) + ' ' +
+																	str(constControl))
 																	
 			
 				debbugfile.write(' ... ok\n')
@@ -75,7 +77,8 @@ for varia_atual in range(varia_min, varia_max+1, varia_tic):
 																	str(minTimeBetweenSends) + ' ' + str(maxEnergyOfBattery) + ' ' + str(minEnergyOfBattery) + ' ' +
 																	str(maxSolarIntensity) + ' ' + str(minSolarIntensity) + ' ' + str(wattPico) + ' ' +
 																	str(constBattery) + ' ' + str(constIntensity) + ' ' + str(varia_min) + ' ' + 
-																	str(varia_max) + ' ' + str(varia_tic) + ' ' + str(varia_atual))
+																	str(varia_max) + ' ' + str(varia_tic) + ' ' + str(varia_atual) + ' ' +
+																	str(constControl))
 																	
 			
 				debbugfile.write(' ... ok\n')				

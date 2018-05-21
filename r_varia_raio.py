@@ -27,6 +27,7 @@ varia_min = int(sys.argv[18])
 varia_max = int(sys.argv[19])
 varia_tic = int(sys.argv[20])
 varia_res = int(sys.argv[21])
+constControl = sys.argv[22]
 
 area = int(num_nos)/float(densidade)
 lado = int(math.sqrt(area))
@@ -64,6 +65,8 @@ for i in range(varia_res, varia_max+1,varia_tic):
 																			\
 			constBattery/number=" + constBattery + " 						\
 		    constIntensity/number=" + constIntensity + "					\
+																			\
+			constControl/number=" + constControl + "						\
 		    ")
 				
 os.system('./r_processa_' + tipoSimulacao + '.py ' + str(simulacoes) + ' ' + str(num_nos) + ' ' + str(varia_min) + ' ' + \

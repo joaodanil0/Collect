@@ -2,8 +2,8 @@
 <sinalgo>
 	<ProjectSelector windowWidth="600" windowHeight="400" lastChosenProject="" windowPosX="50" windowPosY="50" isMaximized="false" selectedTab="1" />
 	<GUI windowWidth="800" windowHeight="600" windowPosX="50" windowPosY="50" isMaximized="false" ControlPanelExpandSimulation="true" ControlPanelShowFullViewPanel="true" ControlPanelShowTextPanel="true" ControlPanelShowProjectControl="true" RunOperationIsLimited="true" helpWindowWidth="500" helpWindowHeight="500" helpWindowPosX="200" helpWindowPosY="200" helpWindowIsMaximized="false" />
-	<RandomSeed seedFromPreviousRun="8348510995088425044" />
-	<App lastSelectedFileDirectory="" checkForUpdatesAtStartup="true" updateCheckTimeStamp="1526843342982" runCmdLineArgs="-batch -project Collect -gen 25 Collect:GAF Collect:Grid C=UDG -gen 1 Collect:Sink Collect:Grid C=UDG -rounds 259200 -overwrite dimX=28 dimY=28 GeometricNodeCollection/rMax=30 UDG/rMax=30 maxTimeBetweenSends/time=7200 minTimeBetweenSends/time=120 maxEnergyOfBattery/energy=1000 minEnergyOfBattery/energy=0 maxSolarIntensity/intensity=400.0 minSolarIntensity/intensity=0 wattPico/power=0.15 radiationMultiplier/multiplier=0.4 nameDir/name=3 simulationType/type=padrao constBattery/number=1 constIntensity/number=1 constControl/number=0.85 " />
+	<RandomSeed seedFromPreviousRun="-3509181544685101621" />
+	<App lastSelectedFileDirectory="" checkForUpdatesAtStartup="true" updateCheckTimeStamp="1526929910807" runCmdLineArgs="-batch -project Collect -gen 5 Collect:GAF Collect:Grid C=UDG -gen 1 Collect:Sink Collect:Grid C=UDG -rounds 259200 -overwrite dimX=7 dimY=7 GeometricNodeCollection/rMax=30 UDG/rMax=30 maxTimeBetweenSends/time=7200 minTimeBetweenSends/time=120 maxEnergyOfBattery/energy=1000 minEnergyOfBattery/energy=0 maxSolarIntensity/intensity=400.0 minSolarIntensity/intensity=0 wattPico/power=0.15 radiationMultiplier/multiplier=0.4 nameDir/name=93 simulationType/type=densidade constBattery/number=1 constIntensity/number=1 constControl/number=0.0 " />
 	<GenNodesDlg numNodes="100" />
 </sinalgo>
 

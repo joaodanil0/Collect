@@ -25,12 +25,13 @@ for i in range(varia_min, varia_max+1,varia_tic):
 		
 		mean_simulation[j][counter] = data.mean()['Energia do no']
 		std_simulatation[j][counter] = data.std()['Energia do no']
-		
+
 		data_delivery = pandas.read_csv('logs/densidade_SimulacaoTX_' + str(i) + str(j+1) + '/TXentrega.csv')
 		
 		mean_delivery_rate[j][counter] = data_delivery.mean()['Porcentagem de pacotes recebidos']
 		std_delivery_rate[j][counter] = data_delivery.std(ddof=0)['Porcentagem de pacotes recebidos']		
-			
+	
+	
 	counter+=1
 
 data_mean = {'0.01': mean_simulation.T[0][:], '0.03': mean_simulation.T[1][:],
@@ -53,6 +54,7 @@ data_mean = pandas.DataFrame(data_mean)
 data_std = pandas.DataFrame(data_std)
 mean_delivery_rate = pandas.DataFrame(mean_delivery_rate)
 std_delivery_rate = pandas.DataFrame(std_delivery_rate)
+
 
 result = {'media': data_mean.mean(), 'desvio padrao': data_std.mean()}
 result_TX = {'media': mean_delivery_rate.mean(), 'desvio padrao': std_delivery_rate.mean()}
