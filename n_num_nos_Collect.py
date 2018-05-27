@@ -5,14 +5,14 @@ import shutil
 import datetime
 import math
 
-# Variaveis da simulacao
+# Variaveis da simulacao    225: 7 | 361: 
 num_nos = 5
-simulacoes = 3
+simulacoes = 1
 
 raio = 30
 densidade = 0.03
 tipoSimulacao = 'num_nos'
-num_rounds =  int(86400 * 1)
+num_rounds =  int(86400 * 3)
 multiplicadorIntensidade = 0.4
 maxTimeBetweenSends = 7200
 minTimeBetweenSends = 120
@@ -25,9 +25,9 @@ constBattery = 1	# Divisor
 constIntensity = 1  # Multiplicador
 constControl = 0.85
 
-varia_min = 1
-varia_max = 5
-varia_tic = 1
+varia_min = 15
+varia_max = 31
+varia_tic = 4
 
 pathExist = True
 # Gera um arquivo para logs

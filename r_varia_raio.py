@@ -45,8 +45,8 @@ for i in range(varia_res, varia_max+1,varia_tic):
 			-overwrite														\
 			dimX="+ str(lado) + "											\
 			dimY="+ str(lado) + "											\
-			GeometricNodeCollection/rMax=" + raio + "						\
-			UDG/rMax=" + raio + "											\
+			GeometricNodeCollection/rMax=" + str(i) + "		  				\
+			UDG/rMax=" + str(i) + "											\
 																			\
 			maxTimeBetweenSends/time=" + maxTimeBetweenSends + "			\
 			minTimeBetweenSends/time=" + minTimeBetweenSends + " 			\
